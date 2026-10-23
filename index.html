@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ApexScout Pro | Professional Football Intelligence & Recruitment Analytics</title>
+  
+  <!-- Tailwind CSS & Inter Font -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace']
+          },
+          colors: {
+            app: {
+              bg: '#0B0F17',
+              panel: '#111722',
+              card: '#161F2E',
+              border: '#1F2937',
+              hover: '#1E293B',
+              muted: '#64748B',
+              text: '#F1F5F9'
+            },
+            metric: {
+              target: '#38BDF8',   /* Sky Blue */
+              candidate: '#10B981', /* Emerald */
+              warning: '#F59E0B'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body {
+      background-color: #0B0F17;
+      color: #F1F5F9;
+      font-family: 'Inter', sans-serif;
+    }
+    .stat-number {
+      font-family: 'JetBrains Mono', monospace;
+      font-feature-settings: 'tnum' on, 'zero' on;
+    }
+    /* Subtle pro table borders */
+    table th, table td {
+      border-color: #1F2937;
+    }
+    /* Custom scrollbars */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #0B0F17; }
+    ::-webkit-scrollbar-thumb { background: #243042; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+  <!-- TOP APPLICATION HEADER (Professional Scouting Tool Interface) -->
+  <header class="border-b border-app-border bg-app-panel sticky top-0 z-40">
+    <div class="w-full px-4 sm:px-6 h-14 flex items-center justify-between">
+      
+      <!-- Logo & System Indicator -->
+      <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-7 h-7 rounded bg-blue-600 flex items-center justify-center font-bold text-xs text-white">
+            AS
+          </div>
+          <span class="font-bold text-sm tracking-tight text-white flex items-center gap-2">
+            ApexScout <span class="text-xs px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-mono font-medium border border-slate-700">v3.2 PRO</span>
+          </span>
+        </div>
+        <div class="h-4 w-px bg-slate-800 hidden sm:block"></div>
+        <div class="hidden sm:flex items-center space-x-2 text-xs text-app-muted">
+          <span>Recruitment Unit: <strong class="text-slate-200 font-medium">European Scouting & Transfer Strategy</strong></span>
+        </div>
+      </div>
+
+      <!-- Right Controls -->
+      <div class="flex items-center space-x-3 text-xs">
+        <div class="hidden md:flex items-center space-x-2 text-app-muted border border-app-border rounded px-2.5 py-1 bg-app-bg">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          <span>Sample: <strong class="text-slate-200 font-mono">1,840 Players</strong> (Min. 900 mins)</span>
+        </div>
+        <button onclick="window.print()" class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition font-medium">
+          <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Export PDF Report
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- SECONDARY ACTION BAR: BENCHMARK SELECTION & STATUS RIBBON -->
+  <div class="border-b border-app-border bg-app-bg/95 px-4 sm:px-6 py-3">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3">
+      
+      <!-- Benchmark Picker Dropdown -->
+      <div class="flex items-center space-x-3">
+        <label for="benchmarkSelect" class="text-xs font-medium text-app-muted uppercase tracking-wider">Benchmark Target:</label>
+        <div class="relative">
+          <select id="benchmarkSelect" onchange="onBenchmarkChange(this.value)" class="bg-app-panel text-slate-100 text-xs font-semibold rounded border border-slate-700 px-3 py-1.5 pr-8 focus:outline-none focus:border-blue-500 cursor-pointer">
+            <option value="haaland">Erling Haaland (Man City - Center Forward - €180M)</option>
+            <option value="debruyne">Kevin De Bruyne (Man City - Attacking Midfield - €50M)</option>
+            <option value="saka">Bukayo Saka (Arsenal - Right Winger - €140M)</option>
+            <option value="bellingham">Jude Bellingham (Real Madrid - Central Midfield - €180M)</option>
+            <option value="rodri">Rodri (Man City - Defensive Midfield - €130M)</option>
+            <option value="vandijk">Virgil van Dijk (Liverpool - Center Back - €30M)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Quick Summary KPIs -->
+      <div class="flex items-center space-x-6 text-xs stat-number">
+        <div>
+          <span class="text-app-muted text-[11px] block font-sans">Benchmark Valuation:</span>
+          <span class="text-sky-400 font-semibold" id="kpiBenchVal">€180.0M</span>
+        </div>
+        <div class="h-6 w-px bg-slate-800"></div>
+        <div>
+          <span class="text-app-muted text-[11px] block font-sans">Avg. Target Fee:</span>
+          <span class="text-emerald-400 font-semibold" id="kpiAvgFee">€46.2M</span>
+        </div>
+        <div class="h-6 w-px bg-slate-800"></div>
+        <div>
+          <span class="text-app-muted text-[11px] block font-sans">Arbitrage Efficiency:</span>
+          <span class="text-slate-100 font-semibold" id="kpiArbitrage">74.3% Cost Reduction</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MAIN DASHBOARD CONTENT -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+    
+    <!-- TOP ROW: RADAR COMPARISON + TARGET PROFILE -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- RADAR CHART CARD (5 Cols) -->
+      <div class="lg:col-span-5 bg-app-panel border border-app-border rounded-lg p-5 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between pb-3 border-b border-app-border mb-4">
+            <div>
+              <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider">Multi-Vector Radar Comparison</h3>
+              <p class="text-[11px] text-app-muted mt-0.5">Metrics normalized to 0–99th percentile per 90 mins</p>
+            </div>
+            <span class="text-[10px] font-mono bg-slate-800 border border-slate-700 px-2 py-0.5 rounded text-slate-300">Opta Pro Feed</span>
+          </div>
+
+          <div class="relative w-full aspect-square max-h-[300px] mx-auto flex items-center justify-center">
+            <canvas id="radarChart"></canvas>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-app-border mt-3 flex items-center justify-between text-xs font-mono">
+          <div class="flex items-center space-x-2">
+            <span class="w-3 h-3 rounded-sm bg-sky-400"></span>
+            <span class="text-slate-300 font-sans" id="legendBenchmark">Haaland (Benchmark)</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="w-3 h-3 rounded-sm bg-emerald-400"></span>
+            <span class="text-slate-300 font-sans" id="legendCandidate">Selected Prospect</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SELECTED PROSPECT SUMMARY & ARBITRAGE CARD (7 Cols) -->
+      <div class="lg:col-span-7 bg-app-panel border border-app-border rounded-lg p-5 flex flex-col justify-between space-y-5">
+        
+        <div>
+          <!-- Top Row Header -->
+          <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 pb-4 border-b border-app-border">
+            <div>
+              <div class="flex items-center space-x-2.5">
+                <h2 class="text-xl font-bold text-white tracking-tight" id="activeName">Benjamin Šeško</h2>
+                <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-400 border border-emerald-800" id="activeMatchBadge">
+                  91.2% Statistical Fit
+                </span>
+              </div>
+              <p class="text-xs text-app-muted mt-1 font-sans" id="activeSub">
+                RB Leipzig • Bundesliga • Center Forward • 21 Years Old • Slovenia
+              </p>
+            </div>
+
+            <div class="text-left sm:text-right">
+              <span class="text-[11px] text-app-muted uppercase tracking-wider block font-medium">Estimated Transfer Value</span>
+              <span class="text-2xl font-bold text-white stat-number" id="activeValue">€50.0M</span>
+            </div>
+          </div>
+
+          <!-- Financial Arbitrage Breakdown Bar -->
+          <div class="grid grid-cols-3 gap-3 my-4 py-3 px-4 bg-app-card rounded border border-app-border text-xs">
+            <div>
+              <span class="text-app-muted text-[11px] block">Transfer Cost Variance</span>
+              <span class="font-mono font-semibold text-emerald-400" id="arbVariance">-€130.0M (-72.2%)</span>
+            </div>
+            <div>
+              <span class="text-app-muted text-[11px] block">Capital Efficiency Index</span>
+              <span class="font-mono font-semibold text-slate-100" id="arbMultiplier">3.60x Value Multiplier</span>
+            </div>
+            <div>
+              <span class="text-app-muted text-[11px] block">Resale Potential</span>
+              <span class="font-mono font-semibold text-sky-400" id="arbResale">High (Age &lt; 22)</span>
+            </div>
+          </div>
+
+          <!-- Quantitative Metrics Table -->
+          <div class="space-y-2 mt-4">
+            <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Normalized Metric Breakdown (Per 90 Minutes)</h4>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-mono" id="metricsGrid">
+              <!-- Dynamically populated with clean percentile progress indicators -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Technical Scout Summary -->
+        <div class="p-3.5 bg-app-bg rounded border border-app-border text-xs space-y-1.5">
+          <span class="font-semibold text-slate-300 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+            <i data-lucide="clipboard-check" class="w-3.5 h-3.5 text-blue-400"></i> Recruitment Recommendation:
+          </span>
+          <p class="text-slate-300 text-[12px] leading-relaxed font-sans" id="activeVerdict">
+            Direct statistical alternative to the benchmark target. Displays elite box presence, top-speed sprint metrics, and exceptional shot-generation volume with substantial upside.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- BOTTOM ROW: SCOUTING POOL & SEARCHABLE DATA TABLE -->
+    <div class="bg-app-panel border border-app-border rounded-lg p-5 space-y-4">
+      
+      <!-- Table Filter Bar -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-app-border">
+        <div>
+          <h3 class="text-sm font-bold text-white tracking-tight">Scouted Prospect Database</h3>
+          <p class="text-xs text-app-muted">Ranked candidates matching target role specifications</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3 text-xs">
+          <!-- League Filter -->
+          <div class="flex items-center space-x-1.5">
+            <span class="text-app-muted font-medium">League:</span>
+            <select id="filterLeague" onchange="applyFilters()" class="bg-app-card text-slate-200 border border-slate-700 rounded px-2.5 py-1 focus:outline-none focus:border-blue-500">
+              <option value="ALL">All Leagues</option>
+              <option value="Bundesliga">Bundesliga</option>
+              <option value="Primeira Liga">Primeira Liga</option>
+              <option value="Ligue 1">Ligue 1</option>
+              <option value="Serie A">Serie A</option>
+              <option value="Eredivisie">Eredivisie</option>
+              <option value="Championship">EFL Championship</option>
+            </select>
+          </div>
+
+          <!-- Max Budget Filter -->
+          <div class="flex items-center space-x-1.5">
+            <span class="text-app-muted font-medium">Max Fee:</span>
+            <select id="filterBudget" onchange="applyFilters()" class="bg-app-card text-slate-200 border border-slate-700 rounded px-2.5 py-1 focus:outline-none focus:border-blue-500">
+              <option value="100">Under €100M</option>
+              <option value="75">Under €75M</option>
+              <option value="50" selected>Under €50M</option>
+              <option value="35">Under €35M</option>
+            </select>
+          </div>
+
+          <!-- Max Age Filter -->
+          <div class="flex items-center space-x-1.5">
+            <span class="text-app-muted font-medium">Max Age:</span>
+            <select id="filterAge" onchange="applyFilters()" class="bg-app-card text-slate-200 border border-slate-700 rounded px-2.5 py-1 focus:outline-none focus:border-blue-500">
+              <option value="28">All Ages (≤ 28)</option>
+              <option value="24" selected>U24 (≤ 24)</option>
+              <option value="21">U21 (≤ 21)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- High-Density Professional Data Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead>
+            <tr class="text-app-muted uppercase tracking-wider text-[11px] border-b border-app-border bg-app-card/60">
+              <th class="py-2.5 px-3 font-semibold">Player</th>
+              <th class="py-2.5 px-3 font-semibold">Club & League</th>
+              <th class="py-2.5 px-3 font-semibold">Position</th>
+              <th class="py-2.5 px-3 font-semibold text-right">Age</th>
+              <th class="py-2.5 px-3 font-semibold text-right">Market Fee</th>
+              <th class="py-2.5 px-3 font-semibold text-right">Cost Savings</th>
+              <th class="py-2.5 px-3 font-semibold text-right">Similarity Fit</th>
+              <th class="py-2.5 px-3 font-semibold text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody id="prospectTableBody" class="divide-y divide-app-border">
+            <!-- Dynamically populated via JS -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-app-border bg-app-panel mt-12 py-6 text-xs text-app-muted">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div>
+        <span class="font-semibold text-slate-300">ApexScout Pro</span> • Open-Source Sports Analytics Engine • MIT License
+      </div>
+      <div class="text-[11px] text-slate-500">
+        Statistical similarity derived via Normalized Euclidean Distance Vector Model against Opta Event Percentiles.
+      </div>
+    </div>
+  </footer>
+
+  <!-- CORE LOGIC & ANALYTICS SCRIPT -->
+  <script>
+    // --- BENCHMARK PLAYERS DATABASE ---
+    const BENCHMARKS = [
+      {
+        id: "haaland",
+        name: "Erling Haaland",
+        club: "Manchester City",
+        league: "Premier League",
+        position: "Center Forward",
+        age: 24,
+        value: 180,
+        labels: ["Non-Pen xG", "Aerial Win %", "Box Touches", "Sprint Speed", "Shooting Eff.", "High Press"],
+        metrics: [98, 92, 94, 95, 96, 68]
+      },
+      {
+        id: "debruyne",
+        name: "Kevin De Bruyne",
+        club: "Manchester City",
+        league: "Premier League",
+        position: "Attacking Midfield",
+        age: 33,
+        value: 50,
+        labels: ["Expected Assists", "Key Passes", "Prog. Passes", "Shot Creation", "Cross Acc.", "Press Resist"],
+        metrics: [99, 98, 97, 96, 92, 85]
+      },
+      {
+        id: "saka",
+        name: "Bukayo Saka",
+        club: "Arsenal",
+        league: "Premier League",
+        position: "Right Winger",
+        age: 23,
+        value: 140,
+        labels: ["Take-On Success", "Prog. Carries", "xG + xA", "Duels Won", "Box Crosses", "Tracking Back"],
+        metrics: [94, 92, 91, 88, 89, 84]
+      },
+      {
+        id: "bellingham",
+        name: "Jude Bellingham",
+        club: "Real Madrid",
+        league: "La Liga",
+        position: "Central Midfield",
+        age: 21,
+        value: 180,
+        labels: ["Box Entries", "Interceptions", "Ground Duels", "Prog. Runs", "Final-3rd Passes", "Goals / 90"],
+        metrics: [95, 88, 92, 91, 89, 93]
+      },
+      {
+        id: "rodri",
+        name: "Rodri",
+        club: "Manchester City",
+        league: "Premier League",
+        position: "Defensive Midfield",
+        age: 28,
+        value: 130,
+        labels: ["Pass Completion", "Tackles Won", "Ball Recoveries", "Press Resistance", "Prog. Passing", "Aerial Duels"],
+        metrics: [99, 96, 95, 98, 94, 91]
+      },
+      {
+        id: "vandijk",
+        name: "Virgil van Dijk",
+        club: "Liverpool",
+        league: "Premier League",
+        position: "Center Back",
+        age: 33,
+        value: 30,
+        labels: ["Aerial Duels %", "Tackle Success", "Long Ball Acc.", "Positioning", "Interceptions", "Clean Sheets"],
+        metrics: [99, 94, 92, 97, 88, 90]
+      }
+    ];
+
+    // --- PROSPECT DATABASE ---
+    const CANDIDATES = [
+      // For Haaland
+      {
+        id: "sesko",
+        name: "Benjamin Šeško",
+        club: "RB Leipzig",
+        league: "Bundesliga",
+        position: "Center Forward",
+        age: 21,
+        nationality: "Slovenia",
+        value: 50,
+        matchesWith: "haaland",
+        metrics: [89, 88, 86, 94, 88, 74],
+        strengths: ["0.68 non-penalty xG/90", "Recorded top speed of 35.2 km/h", "61% aerial duel win rate in European competition"],
+        weaknesses: ["Occasional heavy first touch on transition receptions", "Link-up play against compact deep defensive blocks"],
+        verdict: "Exceptional physical and statistical profile comparable to Erling Haaland at age 21. High-ceiling investment with 72% cost variance."
+      },
+      {
+        id: "omorodion",
+        name: "Samu Omorodion",
+        club: "FC Porto",
+        league: "Primeira Liga",
+        position: "Center Forward",
+        age: 20,
+        nationality: "Spain",
+        value: 35,
+        matchesWith: "haaland",
+        metrics: [86, 91, 84, 92, 85, 71],
+        strengths: ["Direct line-breaking power in transition", "Top 5% penalty area touches in Primeira Liga", "High conversion on first-time shots"],
+        weaknesses: ["Passing volume outside the penalty box", "Defensive pressing positioning"],
+        verdict: "High-value physical forward with explosive acceleration and box dominance. Substantial resale margin."
+      },
+      {
+        id: "gyokeres",
+        name: "Viktor Gyökeres",
+        club: "Sporting CP",
+        league: "Primeira Liga",
+        position: "Center Forward",
+        age: 26,
+        nationality: "Sweden",
+        value: 70,
+        matchesWith: "haaland",
+        metrics: [94, 84, 90, 89, 93, 80],
+        strengths: ["Relentless 1v1 channel running", "Exceptional shot-creating actions per 90", "Complete physical durability"],
+        weaknesses: ["Older profile than U23 targets", "High release clause valuation"],
+        verdict: "Immediate starting caliber forward matching 93% of Haaland's offensive efficiency metrics."
+      },
+
+      // For De Bruyne
+      {
+        id: "wharton",
+        name: "Adam Wharton",
+        club: "Crystal Palace",
+        league: "Championship",
+        position: "Attacking Midfield",
+        age: 21,
+        nationality: "England",
+        value: 45,
+        matchesWith: "debruyne",
+        metrics: [84, 91, 95, 87, 83, 90],
+        strengths: ["High-frequency line-breaking progressive passes", "Exceptional body orientation when receiving under pressure", "Composure in central defensive transition"],
+        weaknesses: ["Moderate direct goal threat from outside the box", "Sprint recovery speed"],
+        verdict: "Premier progressive playmaker with world-class pass selection under intense tactical pressing."
+      },
+      {
+        id: "baena",
+        name: "Álex Baena",
+        club: "Villarreal",
+        league: "Serie A",
+        position: "Attacking Midfield",
+        age: 23,
+        nationality: "Spain",
+        value: 40,
+        matchesWith: "debruyne",
+        metrics: [94, 96, 90, 91, 88, 78],
+        strengths: ["Led La Liga in open-play key passes", "Superb delivery on set-piece crosses", "Dynamic combinations in half-spaces"],
+        weaknesses: ["Disciplinary record in high-tension matches", "Defensive tracking on deep counter-attacks"],
+        verdict: "Highest output chance-creator in Europe outside of the top 5 clubs. Prime recruitment target."
+      },
+
+      // For Saka
+      {
+        id: "doue",
+        name: "Désiré Doué",
+        club: "PSG",
+        league: "Ligue 1",
+        position: "Right Winger",
+        age: 19,
+        nationality: "France",
+        value: 40,
+        matchesWith: "saka",
+        metrics: [92, 88, 84, 82, 80, 81],
+        strengths: ["Ambidextrous 1v1 dribbler", "High ground-duel win rate on the touchline", "Explosive interior cut-backs"],
+        weaknesses: ["Shot selection in crowded boxes", "Consistency over full 90-minute defensive shifts"],
+        verdict: "Direct statistical surrogate to young Bukayo Saka with elite technical fluidity."
+      },
+      {
+        id: "bakayoko",
+        name: "Johan Bakayoko",
+        club: "PSV Eindhoven",
+        league: "Eredivisie",
+        position: "Right Winger",
+        age: 21,
+        nationality: "Belgium",
+        value: 45,
+        matchesWith: "saka",
+        metrics: [88, 89, 86, 80, 85, 78],
+        strengths: ["Accurate in-swinging crosses from wide right", "Isolated 1v1 take-on efficiency", "High shot volume"],
+        weaknesses: ["Right-foot finishing versatility", "Aerial retention"],
+        verdict: "Consistent high-volume chance-creating winger with Champions League experience."
+      },
+
+      // For Bellingham
+      {
+        id: "neves",
+        name: "João Neves",
+        club: "PSG",
+        league: "Ligue 1",
+        position: "Central Midfield",
+        age: 20,
+        nationality: "Portugal",
+        value: 60,
+        matchesWith: "bellingham",
+        metrics: [84, 94, 91, 88, 87, 80],
+        strengths: ["Covers 12km+ per match with elite recovery metrics", "Clean transition tackling", "Relentless central workrate"],
+        weaknesses: ["Aerial duel success due to height limits", "Direct goal volume"],
+        verdict: "Elite dual-phase midfielder matching Bellingham's workrate and defensive presence."
+      },
+
+      // For Rodri
+      {
+        id: "varela",
+        name: "Alan Varela",
+        club: "FC Porto",
+        league: "Primeira Liga",
+        position: "Defensive Midfield",
+        age: 23,
+        nationality: "Argentina",
+        value: 35,
+        matchesWith: "rodri",
+        metrics: [94, 93, 91, 92, 88, 84],
+        strengths: ["91% pass completion in high-pressure phases", "Superb defensive cover shielding backline", "High tactical discipline"],
+        weaknesses: ["Moderate speed across wide recovery zones", "Accumulation of yellow cards"],
+        verdict: "Positional pivot player offering stability, high retention passing, and strong resale value."
+      },
+
+      // For Van Dijk
+      {
+        id: "diomande",
+        name: "Ousmane Diomande",
+        club: "Sporting CP",
+        league: "Primeira Liga",
+        position: "Center Back",
+        age: 21,
+        nationality: "Ivory Coast",
+        value: 40,
+        matchesWith: "vandijk",
+        metrics: [92, 90, 88, 91, 85, 87],
+        strengths: ["Elite recovery pace over 30 meters", "Press-resistant ground passing into midfield", "High duel win rate"],
+        weaknesses: ["Occasional aggressive over-committal on wide balls", "Diagonal long-ball consistency"],
+        verdict: "Physically imposing modern center-back with top-tier recovery speed and progressive distribution."
+      }
+    ];
+
+    // --- STATE ---
+    let activeBenchmark = BENCHMARKS[0];
+    let activeCandidate = CANDIDATES[0];
+    let radarChart = null;
+
+    // --- SIMILARITY FORMULA (Euclidean Distance on Normalized Vectors) ---
+    function computeFit(bench, cand) {
+      let sumSq = 0;
+      for (let i = 0; i < bench.metrics.length; i++) {
+        sumSq += Math.pow(bench.metrics[i] - cand.metrics[i], 2);
+      }
+      let maxDist = Math.sqrt(bench.metrics.length * Math.pow(100, 2));
+      let dist = Math.sqrt(sumSq);
+      let pct = (1 - (dist / maxDist)) * 100;
+      return pct.toFixed(1);
+    }
+
+    // --- INITIALIZE APPLICATION ---
+    function initApp() {
+      initRadar();
+      syncUI();
+      applyFilters();
+      lucide.createIcons();
+    }
+
+    function initRadar() {
+      const ctx = document.getElementById("radarChart").getContext("2d");
+      radarChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: activeBenchmark.labels,
+          datasets: [
+            {
+              label: activeBenchmark.name,
+              data: activeBenchmark.metrics,
+              backgroundColor: 'rgba(56, 189, 248, 0.15)',
+              borderColor: '#38BDF8',
+              borderWidth: 2,
+              pointBackgroundColor: '#38BDF8',
+              pointRadius: 3
+            },
+            {
+              label: activeCandidate.name,
+              data: activeCandidate.metrics,
+              backgroundColor: 'rgba(16, 185, 129, 0.2)',
+              borderColor: '#10B981',
+              borderWidth: 2,
+              pointBackgroundColor: '#10B981',
+              pointRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            r: {
+              angleLines: { color: 'rgba(255, 255, 255, 0.08)' },
+              grid: { color: 'rgba(255, 255, 255, 0.08)' },
+              pointLabels: {
+                color: '#94A3B8',
+                font: { size: 10, family: 'Inter', weight: '500' }
+              },
+              ticks: { display: false, min: 0, max: 100 }
+            }
+          }
+        }
+      });
+    }
+
+    function onBenchmarkChange(benchId) {
+      activeBenchmark = BENCHMARKS.find(b => b.id === benchId);
+      // Auto select first candidate for this benchmark
+      const pool = CANDIDATES.filter(c => c.matchesWith === activeBenchmark.id);
+      activeCandidate = pool.length > 0 ? pool[0] : CANDIDATES[0];
+
+      syncUI();
+      applyFilters();
+    }
+
+    function selectCandidate(candidateId) {
+      activeCandidate = CANDIDATES.find(c => c.id === candidateId);
+      syncUI();
+      applyFilters();
+    }
+
+    function syncUI() {
+      // Benchmark KPIs
+      document.getElementById("kpiBenchVal").innerText = `€${activeBenchmark.value.toFixed(1)}M`;
+      document.getElementById("legendBenchmark").innerText = `${activeBenchmark.name} (Benchmark)`;
+      document.getElementById("legendCandidate").innerText = `${activeCandidate.name} (Target)`;
+
+      // Active Candidate Details
+      const fit = computeFit(activeBenchmark, activeCandidate);
+      document.getElementById("activeName").innerText = activeCandidate.name;
+      document.getElementById("activeMatchBadge").innerText = `${fit}% Statistical Fit`;
+      document.getElementById("activeSub").innerText = `${activeCandidate.club} • ${activeCandidate.league} • ${activeCandidate.position} • ${activeCandidate.age} Years Old • ${activeCandidate.nationality}`;
+      document.getElementById("activeValue").innerText = `€${activeCandidate.value.toFixed(1)}M`;
+
+      // Arbitrage Math
+      const variance = activeBenchmark.value - activeCandidate.value;
+      const variancePct = ((variance / activeBenchmark.value) * 100).toFixed(1);
+      const mult = (activeBenchmark.value / Math.max(1, activeCandidate.value)).toFixed(2);
+
+      document.getElementById("arbVariance").innerText = `-€${variance.toFixed(1)}M (-${variancePct}%)`;
+      document.getElementById("arbMultiplier").innerText = `${mult}x Capital Multiplier`;
+      document.getElementById("arbResale").innerText = activeCandidate.age <= 21 ? "Very High (U21)" : "High (U24)";
+      document.getElementById("activeVerdict").innerText = activeCandidate.verdict;
+
+      // Top Ribbon KPIs
+      const relatedPool = CANDIDATES.filter(c => c.matchesWith === activeBenchmark.id);
+      const avgFee = relatedPool.reduce((acc, c) => acc + c.value, 0) / Math.max(1, relatedPool.length);
+      const overallReduction = (((activeBenchmark.value - avgFee) / activeBenchmark.value) * 100).toFixed(1);
+
+      document.getElementById("kpiAvgFee").innerText = `€${avgFee.toFixed(1)}M`;
+      document.getElementById("kpiArbitrage").innerText = `${overallReduction}% Cost Reduction`;
+
+      // Metrics Grid (Normalized Percentile Bars)
+      const grid = document.getElementById("metricsGrid");
+      grid.innerHTML = activeBenchmark.labels.map((lbl, idx) => {
+        const bVal = activeBenchmark.metrics[idx];
+        const cVal = activeCandidate.metrics[idx];
+        return `
+          <div class="p-2.5 rounded bg-app-bg border border-app-border space-y-1">
+            <div class="flex justify-between text-[11px] font-sans">
+              <span class="text-slate-400 truncate">${lbl}</span>
+              <span class="font-mono text-emerald-400 font-bold">${cVal} <span class="text-slate-500 font-normal">/ ${bVal}</span></span>
+            </div>
+            <div class="w-full bg-slate-800 h-1 rounded overflow-hidden flex">
+              <div class="bg-emerald-500 h-full" style="width: ${cVal}%"></div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      // Update Chart
+      if (radarChart) {
+        radarChart.data.labels = activeBenchmark.labels;
+        radarChart.data.datasets[0].label = activeBenchmark.name;
+        radarChart.data.datasets[0].data = activeBenchmark.metrics;
+        radarChart.data.datasets[1].label = activeCandidate.name;
+        radarChart.data.datasets[1].data = activeCandidate.metrics;
+        radarChart.update();
+      }
+
+      lucide.createIcons();
+    }
+
+    function applyFilters() {
+      const selectedLeague = document.getElementById("filterLeague").value;
+      const maxBudget = parseFloat(document.getElementById("filterBudget").value);
+      const maxAge = parseInt(document.getElementById("filterAge").value);
+
+      const tableBody = document.getElementById("prospectTableBody");
+
+      // Filter candidates for current benchmark
+      let list = CANDIDATES.filter(c => {
+        const isMatch = c.matchesWith === activeBenchmark.id;
+        const leagueOk = (selectedLeague === "ALL") || (c.league === selectedLeague);
+        const budgetOk = c.value <= maxBudget;
+        const ageOk = c.age <= maxAge;
+        return isMatch && leagueOk && budgetOk && ageOk;
+      });
+
+      if (list.length === 0) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="8" class="text-center py-6 text-app-muted">
+              No scouted players match current filter parameters. Try expanding maximum fee or league scope.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tableBody.innerHTML = list.map(c => {
+        const fit = computeFit(activeBenchmark, c);
+        const savings = activeBenchmark.value - c.value;
+        const isSelected = c.id === activeCandidate.id;
+
+        return `
+          <tr class="hover:bg-app-hover transition cursor-pointer ${isSelected ? 'bg-slate-800/60' : ''}" onclick="selectCandidate('${c.id}')">
+            <td class="py-2.5 px-3 font-medium text-white flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-emerald-400' : 'bg-transparent'}"></span>
+              ${c.name}
+            </td>
+            <td class="py-2.5 px-3 text-app-muted">${c.club} <span class="text-slate-500 font-mono text-[10px]">(${c.league})</span></td>
+            <td class="py-2.5 px-3 text-slate-300 font-sans">${c.position}</td>
+            <td class="py-2.5 px-3 text-right font-mono text-slate-300">${c.age}</td>
+            <td class="py-2.5 px-3 text-right font-mono font-semibold text-emerald-400">€${c.value.toFixed(1)}M</td>
+            <td class="py-2.5 px-3 text-right font-mono text-slate-300">-€${savings.toFixed(1)}M</td>
+            <td class="py-2.5 px-3 text-right font-mono font-bold text-white">${fit}%</td>
+            <td class="py-2.5 px-3 text-center">
+              <button class="px-2 py-1 rounded text-[11px] font-sans font-medium ${isSelected ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}">
+                ${isSelected ? 'Active' : 'Analyze'}
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      lucide.createIcons();
+    }
+
+    window.onload = initApp;
+  </script>
+</body>
+</html>
