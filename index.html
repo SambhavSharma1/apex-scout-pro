@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ApexScout Pro | Professional Football Intelligence & Recruitment Analytics</title>
+  <title>ApexScout Pro | Enterprise Football Intelligence & Recruitment Suite</title>
   
-  <!-- Tailwind CSS & Inter Font -->
+  <!-- Tailwind CSS & Professional Font Typography -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -18,18 +18,20 @@
           },
           colors: {
             app: {
-              bg: '#0B0F17',
-              panel: '#111722',
+              bg: '#0A0E17',
+              panel: '#101622',
               card: '#161F2E',
-              border: '#1F2937',
-              hover: '#1E293B',
-              muted: '#64748B',
+              subtle: '#1C2638',
+              border: '#232F42',
+              hover: '#1F2B3E',
+              muted: '#718096',
               text: '#F1F5F9'
             },
             metric: {
-              target: '#38BDF8',   /* Sky Blue */
-              candidate: '#10B981', /* Emerald */
-              warning: '#F59E0B'
+              target: '#38BDF8',   /* Sky Blue Benchmark */
+              candidate: '#10B981', /* Emerald Primary Candidate */
+              compare1: '#F59E0B',  /* Amber Alternate */
+              compare2: '#A855F7'   /* Purple Alternate */
             }
           }
         }
@@ -38,9 +40,9 @@
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   
-  <!-- Chart.js -->
+  <!-- Chart.js for Data Visualizations -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <!-- Lucide Icons -->
@@ -48,286 +50,531 @@
 
   <style>
     body {
-      background-color: #0B0F17;
+      background-color: #0A0E17;
       color: #F1F5F9;
       font-family: 'Inter', sans-serif;
     }
-    .stat-number {
+    .stat-num {
       font-family: 'JetBrains Mono', monospace;
       font-feature-settings: 'tnum' on, 'zero' on;
     }
-    /* Subtle pro table borders */
+    /* Compact pro data table */
     table th, table td {
-      border-color: #1F2937;
+      border-color: #232F42;
     }
-    /* Custom scrollbars */
+    /* Custom refined scrollbars */
     ::-webkit-scrollbar { width: 5px; height: 5px; }
-    ::-webkit-scrollbar-track { background: #0B0F17; }
-    ::-webkit-scrollbar-thumb { background: #243042; border-radius: 3px; }
+    ::-webkit-scrollbar-track { background: #0A0E17; }
+    ::-webkit-scrollbar-thumb { background: #232F42; border-radius: 3px; }
     ::-webkit-scrollbar-thumb:hover { background: #334155; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased">
 
-  <!-- TOP APPLICATION HEADER (Professional Scouting Tool Interface) -->
-  <header class="border-b border-app-border bg-app-panel sticky top-0 z-40">
-    <div class="w-full px-4 sm:px-6 h-14 flex items-center justify-between">
+  <!-- TOP APP NAVIGATION BAR -->
+  <header class="border-b border-app-border bg-app-panel sticky top-0 z-50">
+    <div class="max-w-[1700px] w-full mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
       
-      <!-- Logo & System Indicator -->
-      <div class="flex items-center space-x-4">
+      <!-- Logo & Club Switcher -->
+      <div class="flex items-center space-x-6">
         <div class="flex items-center space-x-2.5">
-          <div class="w-7 h-7 rounded bg-blue-600 flex items-center justify-center font-bold text-xs text-white">
+          <div class="w-7 h-7 rounded bg-blue-600 flex items-center justify-center font-bold text-xs text-white tracking-wider">
             AS
           </div>
           <span class="font-bold text-sm tracking-tight text-white flex items-center gap-2">
-            ApexScout <span class="text-xs px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-mono font-medium border border-slate-700">v3.2 PRO</span>
+            ApexScout <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-mono border border-slate-700">PRO v3.4</span>
           </span>
         </div>
-        <div class="h-4 w-px bg-slate-800 hidden sm:block"></div>
-        <div class="hidden sm:flex items-center space-x-2 text-xs text-app-muted">
-          <span>Recruitment Unit: <strong class="text-slate-200 font-medium">European Scouting & Transfer Strategy</strong></span>
-        </div>
+
+        <div class="h-4 w-px bg-slate-800 hidden md:block"></div>
+
+        <!-- 3 Core Navigation Tabs -->
+        <nav class="flex items-center space-x-1">
+          <button id="navTabDiscovery" onclick="switchView('discovery')" class="px-3 py-1.5 rounded text-xs font-semibold flex items-center gap-2 bg-slate-800 text-white border border-slate-700 transition">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-blue-400"></i>
+            <span>1. Discovery & Search</span>
+          </button>
+          <button id="navTabProfile" onclick="switchView('profile')" class="px-3 py-1.5 rounded text-xs font-medium flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+            <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+            <span>2. Player Profile Deep-Dive</span>
+          </button>
+          <button id="navTabCompare" onclick="switchView('compare')" class="px-3 py-1.5 rounded text-xs font-medium flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+            <i data-lucide="columns" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <span>3. Multi-Player Comparison</span>
+            <span id="compareNavBadge" class="bg-emerald-500/20 text-emerald-400 text-[10px] font-mono px-1.5 py-0.2 rounded border border-emerald-500/30">2</span>
+          </button>
+        </nav>
       </div>
 
-      <!-- Right Controls -->
-      <div class="flex items-center space-x-3 text-xs">
-        <div class="hidden md:flex items-center space-x-2 text-app-muted border border-app-border rounded px-2.5 py-1 bg-app-bg">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-          <span>Sample: <strong class="text-slate-200 font-mono">1,840 Players</strong> (Min. 900 mins)</span>
+      <!-- Right Controls: Target Benchmark & Shortlist Quick Actions -->
+      <div class="flex items-center space-x-4 text-xs">
+        <div class="hidden lg:flex items-center space-x-2 text-slate-400 bg-app-card px-2.5 py-1 rounded border border-app-border">
+          <span class="text-[11px] font-medium uppercase text-slate-500">Benchmark Role:</span>
+          <select id="topBenchmarkSelect" onchange="onBenchmarkChange(this.value)" class="bg-transparent text-slate-200 font-semibold focus:outline-none cursor-pointer">
+            <option value="haaland">Erling Haaland (Center Forward - Man City)</option>
+            <option value="debruyne">Kevin De Bruyne (Attacking Midfield - Man City)</option>
+            <option value="saka">Bukayo Saka (Right Winger - Arsenal)</option>
+            <option value="bellingham">Jude Bellingham (Central Midfield - Real Madrid)</option>
+            <option value="rodri">Rodri (Defensive Midfield - Man City)</option>
+            <option value="vandijk">Virgil van Dijk (Center Back - Liverpool)</option>
+          </select>
         </div>
-        <button onclick="window.print()" class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition font-medium">
-          <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Export PDF Report
+
+        <div class="h-4 w-px bg-slate-800 hidden sm:block"></div>
+
+        <button onclick="window.print()" class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium transition">
+          <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+          <span class="hidden sm:inline">Export Board Deck</span>
         </button>
       </div>
 
     </div>
   </header>
 
-  <!-- SECONDARY ACTION BAR: BENCHMARK SELECTION & STATUS RIBBON -->
-  <div class="border-b border-app-border bg-app-bg/95 px-4 sm:px-6 py-3">
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3">
-      
-      <!-- Benchmark Picker Dropdown -->
-      <div class="flex items-center space-x-3">
-        <label for="benchmarkSelect" class="text-xs font-medium text-app-muted uppercase tracking-wider">Benchmark Target:</label>
-        <div class="relative">
-          <select id="benchmarkSelect" onchange="onBenchmarkChange(this.value)" class="bg-app-panel text-slate-100 text-xs font-semibold rounded border border-slate-700 px-3 py-1.5 pr-8 focus:outline-none focus:border-blue-500 cursor-pointer">
-            <option value="haaland">Erling Haaland (Man City - Center Forward - €180M)</option>
-            <option value="debruyne">Kevin De Bruyne (Man City - Attacking Midfield - €50M)</option>
-            <option value="saka">Bukayo Saka (Arsenal - Right Winger - €140M)</option>
-            <option value="bellingham">Jude Bellingham (Real Madrid - Central Midfield - €180M)</option>
-            <option value="rodri">Rodri (Man City - Defensive Midfield - €130M)</option>
-            <option value="vandijk">Virgil van Dijk (Liverpool - Center Back - €30M)</option>
+  <!-- ========================================================================= -->
+  <!-- SCREEN 1: SEARCH & DISCOVERY (Dense Table & Filter Suite) -->
+  <!-- ========================================================================= -->
+  <section id="viewDiscovery" class="flex-1 max-w-[1700px] w-full mx-auto px-4 sm:px-6 py-6 space-y-5">
+    
+    <!-- Top KPI Ribbon -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="p-3.5 rounded-lg bg-app-panel border border-app-border">
+        <span class="text-[11px] uppercase tracking-wider text-app-muted block font-medium">Benchmark Superstar Valuation</span>
+        <div class="flex items-baseline space-x-2 mt-1">
+          <span class="text-xl font-bold text-sky-400 stat-num" id="discBenchVal">€180.0M</span>
+          <span class="text-xs text-slate-400 font-sans" id="discBenchName">Erling Haaland</span>
+        </div>
+      </div>
+      <div class="p-3.5 rounded-lg bg-app-panel border border-app-border">
+        <span class="text-[11px] uppercase tracking-wider text-app-muted block font-medium">Average Candidate Fee</span>
+        <div class="flex items-baseline space-x-2 mt-1">
+          <span class="text-xl font-bold text-emerald-400 stat-num" id="discAvgFee">€46.2M</span>
+          <span class="text-xs text-emerald-400/80 font-mono font-medium">-74.3% Variance</span>
+        </div>
+      </div>
+      <div class="p-3.5 rounded-lg bg-app-panel border border-app-border">
+        <span class="text-[11px] uppercase tracking-wider text-app-muted block font-medium">Player Database Pool</span>
+        <div class="flex items-baseline space-x-2 mt-1">
+          <span class="text-xl font-bold text-white stat-num" id="discPoolCount">1,840</span>
+          <span class="text-xs text-slate-400 font-sans">Min. 900 Mins (Big 5 + Top 6)</span>
+        </div>
+      </div>
+      <div class="p-3.5 rounded-lg bg-app-panel border border-app-border">
+        <span class="text-[11px] uppercase tracking-wider text-app-muted block font-medium">Board Justification Index</span>
+        <div class="flex items-baseline space-x-2 mt-1">
+          <span class="text-xl font-bold text-amber-400 stat-num">3.9x</span>
+          <span class="text-xs text-slate-400 font-sans">Average Capital ROI</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Multi-Parameter Recruitment Filter Bar -->
+    <div class="p-4 rounded-lg bg-app-panel border border-app-border space-y-3">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-app-border">
+        <div>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
+            <i data-lucide="sliders" class="w-3.5 h-3.5 text-blue-400"></i> Recruitment Filter Parameters
+          </h2>
+          <p class="text-[11px] text-app-muted">Calibrate criteria to narrow qualified shortlist candidates</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20" id="filterMatchBadge">
+            Matching Candidates: 3
+          </span>
+          <button onclick="resetFilters()" class="text-xs text-slate-400 hover:text-white underline ml-2">Reset</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
+        <!-- Position -->
+        <div>
+          <label class="block text-app-muted text-[11px] font-medium mb-1">Tactical Position</label>
+          <select id="filterPos" onchange="applyDiscoveryFilters()" class="w-full bg-app-card text-slate-200 border border-slate-700 rounded px-2.5 py-1.5 focus:outline-none focus:border-blue-500">
+            <option value="ALL">All Positions</option>
+            <option value="Center Forward" selected>Center Forward</option>
+            <option value="Attacking Midfield">Attacking Midfield</option>
+            <option value="Right Winger">Right Winger</option>
+            <option value="Central Midfield">Central Midfield</option>
+            <option value="Defensive Midfield">Defensive Midfield</option>
+            <option value="Center Back">Center Back</option>
+          </select>
+        </div>
+
+        <!-- League -->
+        <div>
+          <label class="block text-app-muted text-[11px] font-medium mb-1">League Scope</label>
+          <select id="filterLeague" onchange="applyDiscoveryFilters()" class="w-full bg-app-card text-slate-200 border border-slate-700 rounded px-2.5 py-1.5 focus:outline-none focus:border-blue-500">
+            <option value="ALL">All Global Leagues</option>
+            <option value="Bundesliga">Bundesliga (Germany)</option>
+            <option value="Primeira Liga">Primeira Liga (Portugal)</option>
+            <option value="Ligue 1">Ligue 1 (France)</option>
+            <option value="Eredivisie">Eredivisie (Netherlands)</option>
+            <option value="Championship">EFL Championship</option>
+            <option value="Serie A">Serie A (Italy)</option>
+          </select>
+        </div>
+
+        <!-- Max Age -->
+        <div>
+          <label class="block text-app-muted text-[11px] font-medium mb-1">Max Age Ceiling</label>
+          <select id="filterAge" onchange="applyDiscoveryFilters()" class="w-full bg-app-card text-slate-200 border border-slate-700 rounded px-2.5 py-1.5 focus:outline-none focus:border-blue-500">
+            <option value="28">All Ages (≤ 28)</option>
+            <option value="24" selected>U24 (≤ 24)</option>
+            <option value="22">U22 (≤ 22)</option>
+            <option value="20">U20 (≤ 20)</option>
+          </select>
+        </div>
+
+        <!-- Max Transfer Fee -->
+        <div>
+          <label class="block text-app-muted text-[11px] font-medium mb-1">Max Transfer Budget</label>
+          <select id="filterBudget" onchange="applyDiscoveryFilters()" class="w-full bg-app-card text-slate-200 border border-slate-700 rounded px-2.5 py-1.5 focus:outline-none focus:border-blue-500">
+            <option value="120">Under €120M</option>
+            <option value="75">Under €75M</option>
+            <option value="50" selected>Under €50M</option>
+            <option value="35">Under €35M</option>
+            <option value="20">Under €20M</option>
+          </select>
+        </div>
+
+        <!-- Contract Expiry -->
+        <div>
+          <label class="block text-app-muted text-[11px] font-medium mb-1">Contract Expiry</label>
+          <select id="filterContract" onchange="applyDiscoveryFilters()" class="w-full bg-app-card text-slate-200 border border-slate-700 rounded px-2.5 py-1.5 focus:outline-none focus:border-blue-500">
+            <option value="ALL">Any Expiry</option>
+            <option value="2026">Expiring ≤ 2026 (Value Deal)</option>
+            <option value="2027">Expiring ≤ 2027</option>
+            <option value="2028+">Long Term (2028+)</option>
+          </select>
+        </div>
+
+        <!-- Minimum Minutes -->
+        <div>
+          <label class="block text-app-muted text-[11px] font-medium mb-1">Min. Sample Size</label>
+          <select id="filterMinutes" onchange="applyDiscoveryFilters()" class="w-full bg-app-card text-slate-200 border border-slate-700 rounded px-2.5 py-1.5 focus:outline-none focus:border-blue-500">
+            <option value="900" selected>≥ 900 Mins (10 Starts)</option>
+            <option value="1500">≥ 1,500 Mins (Regular Starter)</option>
+            <option value="2200">≥ 2,200 Mins (Full Season)</option>
           </select>
         </div>
       </div>
-
-      <!-- Quick Summary KPIs -->
-      <div class="flex items-center space-x-6 text-xs stat-number">
-        <div>
-          <span class="text-app-muted text-[11px] block font-sans">Benchmark Valuation:</span>
-          <span class="text-sky-400 font-semibold" id="kpiBenchVal">€180.0M</span>
-        </div>
-        <div class="h-6 w-px bg-slate-800"></div>
-        <div>
-          <span class="text-app-muted text-[11px] block font-sans">Avg. Target Fee:</span>
-          <span class="text-emerald-400 font-semibold" id="kpiAvgFee">€46.2M</span>
-        </div>
-        <div class="h-6 w-px bg-slate-800"></div>
-        <div>
-          <span class="text-app-muted text-[11px] block font-sans">Arbitrage Efficiency:</span>
-          <span class="text-slate-100 font-semibold" id="kpiArbitrage">74.3% Cost Reduction</span>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- MAIN DASHBOARD CONTENT -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
-    
-    <!-- TOP ROW: RADAR COMPARISON + TARGET PROFILE -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-      
-      <!-- RADAR CHART CARD (5 Cols) -->
-      <div class="lg:col-span-5 bg-app-panel border border-app-border rounded-lg p-5 flex flex-col justify-between">
-        <div>
-          <div class="flex items-center justify-between pb-3 border-b border-app-border mb-4">
-            <div>
-              <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider">Multi-Vector Radar Comparison</h3>
-              <p class="text-[11px] text-app-muted mt-0.5">Metrics normalized to 0–99th percentile per 90 mins</p>
-            </div>
-            <span class="text-[10px] font-mono bg-slate-800 border border-slate-700 px-2 py-0.5 rounded text-slate-300">Opta Pro Feed</span>
-          </div>
-
-          <div class="relative w-full aspect-square max-h-[300px] mx-auto flex items-center justify-center">
-            <canvas id="radarChart"></canvas>
-          </div>
-        </div>
-
-        <div class="pt-4 border-t border-app-border mt-3 flex items-center justify-between text-xs font-mono">
-          <div class="flex items-center space-x-2">
-            <span class="w-3 h-3 rounded-sm bg-sky-400"></span>
-            <span class="text-slate-300 font-sans" id="legendBenchmark">Haaland (Benchmark)</span>
-          </div>
-          <div class="flex items-center space-x-2">
-            <span class="w-3 h-3 rounded-sm bg-emerald-400"></span>
-            <span class="text-slate-300 font-sans" id="legendCandidate">Selected Prospect</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- SELECTED PROSPECT SUMMARY & ARBITRAGE CARD (7 Cols) -->
-      <div class="lg:col-span-7 bg-app-panel border border-app-border rounded-lg p-5 flex flex-col justify-between space-y-5">
-        
-        <div>
-          <!-- Top Row Header -->
-          <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 pb-4 border-b border-app-border">
-            <div>
-              <div class="flex items-center space-x-2.5">
-                <h2 class="text-xl font-bold text-white tracking-tight" id="activeName">Benjamin Šeško</h2>
-                <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-400 border border-emerald-800" id="activeMatchBadge">
-                  91.2% Statistical Fit
-                </span>
-              </div>
-              <p class="text-xs text-app-muted mt-1 font-sans" id="activeSub">
-                RB Leipzig • Bundesliga • Center Forward • 21 Years Old • Slovenia
-              </p>
-            </div>
-
-            <div class="text-left sm:text-right">
-              <span class="text-[11px] text-app-muted uppercase tracking-wider block font-medium">Estimated Transfer Value</span>
-              <span class="text-2xl font-bold text-white stat-number" id="activeValue">€50.0M</span>
-            </div>
-          </div>
-
-          <!-- Financial Arbitrage Breakdown Bar -->
-          <div class="grid grid-cols-3 gap-3 my-4 py-3 px-4 bg-app-card rounded border border-app-border text-xs">
-            <div>
-              <span class="text-app-muted text-[11px] block">Transfer Cost Variance</span>
-              <span class="font-mono font-semibold text-emerald-400" id="arbVariance">-€130.0M (-72.2%)</span>
-            </div>
-            <div>
-              <span class="text-app-muted text-[11px] block">Capital Efficiency Index</span>
-              <span class="font-mono font-semibold text-slate-100" id="arbMultiplier">3.60x Value Multiplier</span>
-            </div>
-            <div>
-              <span class="text-app-muted text-[11px] block">Resale Potential</span>
-              <span class="font-mono font-semibold text-sky-400" id="arbResale">High (Age &lt; 22)</span>
-            </div>
-          </div>
-
-          <!-- Quantitative Metrics Table -->
-          <div class="space-y-2 mt-4">
-            <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Normalized Metric Breakdown (Per 90 Minutes)</h4>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-mono" id="metricsGrid">
-              <!-- Dynamically populated with clean percentile progress indicators -->
-            </div>
-          </div>
-        </div>
-
-        <!-- Technical Scout Summary -->
-        <div class="p-3.5 bg-app-bg rounded border border-app-border text-xs space-y-1.5">
-          <span class="font-semibold text-slate-300 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-            <i data-lucide="clipboard-check" class="w-3.5 h-3.5 text-blue-400"></i> Recruitment Recommendation:
-          </span>
-          <p class="text-slate-300 text-[12px] leading-relaxed font-sans" id="activeVerdict">
-            Direct statistical alternative to the benchmark target. Displays elite box presence, top-speed sprint metrics, and exceptional shot-generation volume with substantial upside.
-          </p>
-        </div>
-
-      </div>
-
     </div>
 
-    <!-- BOTTOM ROW: SCOUTING POOL & SEARCHABLE DATA TABLE -->
-    <div class="bg-app-panel border border-app-border rounded-lg p-5 space-y-4">
-      
-      <!-- Table Filter Bar -->
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-app-border">
+    <!-- DENSE SORTABLE DISCOVERY DATA TABLE -->
+    <div class="bg-app-panel border border-app-border rounded-lg overflow-hidden">
+      <div class="px-4 py-3 border-b border-app-border flex items-center justify-between">
         <div>
-          <h3 class="text-sm font-bold text-white tracking-tight">Scouted Prospect Database</h3>
-          <p class="text-xs text-app-muted">Ranked candidates matching target role specifications</p>
+          <h3 class="text-sm font-bold text-white tracking-tight">Scouted Prospect Results</h3>
+          <p class="text-xs text-app-muted">Ranked by Euclidean statistical similarity against target role benchmark</p>
         </div>
-
-        <div class="flex flex-wrap items-center gap-3 text-xs">
-          <!-- League Filter -->
-          <div class="flex items-center space-x-1.5">
-            <span class="text-app-muted font-medium">League:</span>
-            <select id="filterLeague" onchange="applyFilters()" class="bg-app-card text-slate-200 border border-slate-700 rounded px-2.5 py-1 focus:outline-none focus:border-blue-500">
-              <option value="ALL">All Leagues</option>
-              <option value="Bundesliga">Bundesliga</option>
-              <option value="Primeira Liga">Primeira Liga</option>
-              <option value="Ligue 1">Ligue 1</option>
-              <option value="Serie A">Serie A</option>
-              <option value="Eredivisie">Eredivisie</option>
-              <option value="Championship">EFL Championship</option>
-            </select>
-          </div>
-
-          <!-- Max Budget Filter -->
-          <div class="flex items-center space-x-1.5">
-            <span class="text-app-muted font-medium">Max Fee:</span>
-            <select id="filterBudget" onchange="applyFilters()" class="bg-app-card text-slate-200 border border-slate-700 rounded px-2.5 py-1 focus:outline-none focus:border-blue-500">
-              <option value="100">Under €100M</option>
-              <option value="75">Under €75M</option>
-              <option value="50" selected>Under €50M</option>
-              <option value="35">Under €35M</option>
-            </select>
-          </div>
-
-          <!-- Max Age Filter -->
-          <div class="flex items-center space-x-1.5">
-            <span class="text-app-muted font-medium">Max Age:</span>
-            <select id="filterAge" onchange="applyFilters()" class="bg-app-card text-slate-200 border border-slate-700 rounded px-2.5 py-1 focus:outline-none focus:border-blue-500">
-              <option value="28">All Ages (≤ 28)</option>
-              <option value="24" selected>U24 (≤ 24)</option>
-              <option value="21">U21 (≤ 21)</option>
-            </select>
-          </div>
+        <div class="text-xs text-app-muted">
+          Click any row to view full <strong>Player Profile</strong> or check boxes to <strong>Compare</strong>
         </div>
       </div>
 
-      <!-- High-Density Professional Data Table -->
       <div class="overflow-x-auto">
         <table class="w-full text-left text-xs">
           <thead>
             <tr class="text-app-muted uppercase tracking-wider text-[11px] border-b border-app-border bg-app-card/60">
-              <th class="py-2.5 px-3 font-semibold">Player</th>
-              <th class="py-2.5 px-3 font-semibold">Club & League</th>
+              <th class="py-2.5 px-3 font-semibold w-10 text-center">Compare</th>
+              <th class="py-2.5 px-3 font-semibold cursor-pointer hover:text-white" onclick="sortDiscovery('name')">Player & Club</th>
               <th class="py-2.5 px-3 font-semibold">Position</th>
-              <th class="py-2.5 px-3 font-semibold text-right">Age</th>
-              <th class="py-2.5 px-3 font-semibold text-right">Market Fee</th>
-              <th class="py-2.5 px-3 font-semibold text-right">Cost Savings</th>
-              <th class="py-2.5 px-3 font-semibold text-right">Similarity Fit</th>
-              <th class="py-2.5 px-3 font-semibold text-center">Action</th>
+              <th class="py-2.5 px-3 font-semibold text-right cursor-pointer hover:text-white" onclick="sortDiscovery('age')">Age</th>
+              <th class="py-2.5 px-3 font-semibold text-right">Contract</th>
+              <th class="py-2.5 px-3 font-semibold text-right cursor-pointer hover:text-white" onclick="sortDiscovery('minutes')">Minutes</th>
+              <th class="py-2.5 px-3 font-semibold text-right cursor-pointer hover:text-white" onclick="sortDiscovery('value')">Market Fee</th>
+              <th class="py-2.5 px-3 font-semibold text-right text-emerald-400">Fee Variance</th>
+              <th class="py-2.5 px-3 font-semibold text-right cursor-pointer hover:text-white" onclick="sortDiscovery('fit')">Similarity Fit</th>
+              <th class="py-2.5 px-3 font-semibold text-center">Actions</th>
             </tr>
           </thead>
-          <tbody id="prospectTableBody" class="divide-y divide-app-border">
+          <tbody id="discoveryTableBody" class="divide-y divide-app-border">
             <!-- Dynamically populated via JS -->
           </tbody>
         </table>
       </div>
+    </div>
+
+  </section>
+
+
+  <!-- ========================================================================= -->
+  <!-- SCREEN 2: PLAYER PROFILE DEEP-DIVE -->
+  <!-- ========================================================================= -->
+  <section id="viewProfile" class="hidden flex-1 max-w-[1700px] w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+    
+    <!-- Player Header Banner -->
+    <div class="bg-app-panel border border-app-border rounded-lg p-6">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-app-border">
+        
+        <div class="flex items-start gap-4">
+          <div class="w-16 h-16 rounded-lg bg-emerald-950 border border-emerald-800 text-emerald-400 flex items-center justify-center font-bold text-xl font-mono" id="profAvatar">
+            BS
+          </div>
+          <div>
+            <div class="flex flex-wrap items-center gap-3">
+              <h1 class="text-2xl font-bold text-white tracking-tight" id="profName">Benjamin Šeško</h1>
+              <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30" id="profFitBadge">
+                91.2% Match to Erling Haaland
+              </span>
+              <span class="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700" id="profStatus">
+                Active Target • Priority Tier 1
+              </span>
+            </div>
+            <p class="text-xs text-app-muted mt-1.5 flex flex-wrap items-center gap-2" id="profSub">
+              <span>RB Leipzig</span> • <span>Bundesliga</span> • <span>Center Forward</span> • <span>21 Years Old (May 31, 2003)</span> • <span>Slovenia</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Financial & Contract Matrix -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
+          <div class="p-2.5 rounded bg-app-card border border-app-border">
+            <span class="text-[10px] text-app-muted uppercase block font-sans">Market Valuation</span>
+            <span class="text-lg font-bold text-white stat-num" id="profValue">€50.0M</span>
+          </div>
+          <div class="p-2.5 rounded bg-app-card border border-app-border">
+            <span class="text-[10px] text-app-muted uppercase block font-sans">Contract Expiry</span>
+            <span class="text-lg font-bold text-slate-200 stat-num" id="profContract">June 2029</span>
+          </div>
+          <div class="p-2.5 rounded bg-app-card border border-app-border">
+            <span class="text-[10px] text-app-muted uppercase block font-sans">Board Fee Savings</span>
+            <span class="text-lg font-bold text-emerald-400 stat-num" id="profSavings">€130.0M (-72%)</span>
+          </div>
+          <div class="p-2.5 rounded bg-app-card border border-app-border">
+            <span class="text-[10px] text-app-muted uppercase block font-sans">Sample Size</span>
+            <span class="text-lg font-bold text-sky-400 stat-num" id="profMinutes">2,140 Mins</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-4">
+        <div class="flex items-center space-x-2 text-xs">
+          <button onclick="toggleCompareCandidate(activeCandidate.id)" class="px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-medium flex items-center gap-1.5 transition">
+            <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Add to Multi-Comparison
+          </button>
+          <button onclick="switchView('discovery')" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
+            ← Return to Discovery Table
+          </button>
+        </div>
+        <div class="text-xs text-app-muted">
+          Last Scout Update: <span class="text-slate-300 font-mono">October 2026</span> • Source: <span class="text-slate-300 font-mono">Opta Pro Event Feed</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN PROFILE GRID: RADAR + METRICS + FORM & SCOUT VERDICT -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- LEFT: RADAR OVERLAY (5 Cols) -->
+      <div class="lg:col-span-5 bg-app-panel border border-app-border rounded-lg p-5 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between pb-3 border-b border-app-border mb-4">
+            <div>
+              <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider">Side-by-Side Radar vs Benchmark</h3>
+              <p class="text-[11px] text-app-muted mt-0.5">Direct percentile overlay across 6 core tactical pillars</p>
+            </div>
+            <span class="text-[10px] font-mono bg-slate-800 border border-slate-700 px-2 py-0.5 rounded text-slate-300">Percentiles (p90)</span>
+          </div>
+
+          <div class="relative w-full aspect-square max-h-[320px] mx-auto flex items-center justify-center">
+            <canvas id="profileRadarChart"></canvas>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-app-border mt-4 flex items-center justify-between text-xs font-mono">
+          <div class="flex items-center space-x-2">
+            <span class="w-3 h-3 rounded-sm bg-sky-400"></span>
+            <span class="text-slate-300 font-sans" id="profRadarBenchLabel">Erling Haaland (Benchmark)</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="w-3 h-3 rounded-sm bg-emerald-400"></span>
+            <span class="text-slate-300 font-sans" id="profRadarTargetLabel">Benjamin Šeško (Target)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: ROLE-SPECIFIC STATS, RECENT FORM & SCOUT REPORT (7 Cols) -->
+      <div class="lg:col-span-7 space-y-6">
+        
+        <!-- Detailed Percentile Bars -->
+        <div class="bg-app-panel border border-app-border rounded-lg p-5 space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-app-border">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-white">Role-Specific Performance Breakdown</h3>
+            <span class="text-[11px] text-app-muted">Candidate (Green) vs Benchmark (Blue)</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="profileMetricsBreakdown">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+
+        <!-- Recent Match Form Indicator -->
+        <div class="bg-app-panel border border-app-border rounded-lg p-5 space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-app-border">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-white">Recent Match Form (Last 5 Competitive Outings)</h3>
+            <span class="text-xs font-mono text-emerald-400 font-bold" id="profFormAvg">7.64 Avg Rating</span>
+          </div>
+          <div class="grid grid-cols-5 gap-2 text-center text-xs font-mono" id="profileFormBoxes">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Qualitative Technical Scout Notes & Board Justification -->
+        <div class="bg-app-panel border border-app-border rounded-lg p-5 space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-app-border">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
+              <i data-lucide="file-check-2" class="w-3.5 h-3.5 text-blue-400"></i> Scouting Brief & Board Justification
+            </h3>
+            <span class="text-[11px] text-slate-400 font-sans">Confidential Technical File</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div class="p-3 rounded bg-app-card border border-app-border space-y-1.5">
+              <span class="font-bold text-emerald-400 uppercase tracking-wide text-[11px] flex items-center gap-1">
+                <i data-lucide="check" class="w-3.5 h-3.5"></i> Verified Tactical Strengths
+              </span>
+              <ul class="text-slate-300 space-y-1" id="profStrengths">
+                <!-- Dynamically populated -->
+              </ul>
+            </div>
+
+            <div class="p-3 rounded bg-app-card border border-app-border space-y-1.5">
+              <span class="font-bold text-amber-400 uppercase tracking-wide text-[11px] flex items-center gap-1">
+                <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i> Developmental Risk Factors
+              </span>
+              <ul class="text-slate-300 space-y-1" id="profWeaknesses">
+                <!-- Dynamically populated -->
+              </ul>
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded bg-app-card border border-app-border text-xs space-y-1">
+            <span class="font-bold text-slate-200 uppercase tracking-wider text-[11px] block">
+              Chief Scout Executive Summary
+            </span>
+            <p class="text-slate-300 leading-relaxed font-sans" id="profVerdict">
+              Direct statistical surrogate. High resale upside with 70%+ cost savings compared to current transfer market norms. Immediate starter capability.
+            </p>
+          </div>
+        </div>
+
+      </div>
 
     </div>
 
-  </main>
+  </section>
+
+
+  <!-- ========================================================================= -->
+  <!-- SCREEN 3: MULTI-PLAYER COMPARISON (2 to 4 Players Side-by-Side) -->
+  <!-- ========================================================================= -->
+  <section id="viewCompare" class="hidden flex-1 max-w-[1700px] w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+    
+    <!-- Comparison Header & Controls -->
+    <div class="bg-app-panel border border-app-border rounded-lg p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h2 class="text-base font-bold text-white tracking-tight flex items-center gap-2">
+          <i data-lucide="columns" class="w-4 h-4 text-emerald-400"></i> Multi-Player Head-to-Head Comparison
+        </h2>
+        <p class="text-xs text-app-muted">Compare two to four shortlisted prospects side-by-side against the benchmark</p>
+      </div>
+
+      <div class="flex items-center space-x-3 text-xs">
+        <span class="text-app-muted">Active Candidates in Comparison: <strong class="text-white font-mono" id="compareCountLabel">2 of 4 Max</strong></span>
+        <button onclick="clearComparison()" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
+          Clear All
+        </button>
+      </div>
+    </div>
+
+    <!-- COMPARISON RADAR & METRIC MATRICES -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- Multi-Radar Chart (5 Cols) -->
+      <div class="lg:col-span-5 bg-app-panel border border-app-border rounded-lg p-5 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between pb-3 border-b border-app-border mb-3">
+            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Multi-Candidate Radar Overlay</h3>
+            <span class="text-[10px] font-mono text-slate-400">Role Specific</span>
+          </div>
+
+          <div class="relative w-full aspect-square max-h-[340px] mx-auto flex items-center justify-center">
+            <canvas id="multiRadarChart"></canvas>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-app-border mt-3 space-y-1.5 text-xs font-mono" id="multiRadarLegend">
+          <!-- Dynamically populated with active players -->
+        </div>
+      </div>
+
+      <!-- SIDE-BY-SIDE CANDIDATE COMPARISON MATRIX (7 Cols) -->
+      <div class="lg:col-span-7 bg-app-panel border border-app-border rounded-lg p-5 space-y-4">
+        
+        <div class="flex items-center justify-between pb-2 border-b border-app-border">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-white">Detailed Head-to-Head Attributes</h3>
+          <span class="text-[11px] text-app-muted">Comparing vs <span id="compTargetLabel" class="text-sky-400 font-semibold font-mono">Erling Haaland</span></span>
+        </div>
+
+        <!-- Responsive Side-by-Side Column Matrix -->
+        <div class="overflow-x-auto">
+          <div class="min-w-[600px] grid grid-cols-4 gap-3 text-xs" id="compareColumnsContainer">
+            <!-- Dynamically populated columns (Benchmark + up to 3 candidates) -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Multi-Player Financial Arbitrage Summary Table -->
+    <div class="bg-app-panel border border-app-border rounded-lg p-5 space-y-3">
+      <div class="flex items-center justify-between pb-2 border-b border-app-border">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-white">Board Financial & Capital Allocation Summary</h3>
+        <span class="text-[11px] text-app-muted">Comparison of acquisition fees, contract horizons, and ROI</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead>
+            <tr class="text-app-muted uppercase tracking-wider text-[11px] border-b border-app-border bg-app-card/60">
+              <th class="py-2.5 px-3 font-semibold">Candidate</th>
+              <th class="py-2.5 px-3 font-semibold text-right">Age</th>
+              <th class="py-2.5 px-3 font-semibold text-right">Market Fee</th>
+              <th class="py-2.5 px-3 font-semibold text-right">Savings vs Benchmark</th>
+              <th class="py-2.5 px-3 font-semibold text-right">Contract Expiry</th>
+              <th class="py-2.5 px-3 font-semibold text-right">Similarity Parity</th>
+              <th class="py-2.5 px-3 font-semibold text-right">Capital Multiplier</th>
+              <th class="py-2.5 px-3 font-semibold text-center">Board Priority</th>
+            </tr>
+          </thead>
+          <tbody id="compareFinancialTableBody" class="divide-y divide-app-border">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </section>
 
   <!-- FOOTER -->
-  <footer class="border-t border-app-border bg-app-panel mt-12 py-6 text-xs text-app-muted">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+  <footer class="border-t border-app-border bg-app-panel mt-auto py-5 text-xs text-app-muted">
+    <div class="max-w-[1700px] mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
       <div>
-        <span class="font-semibold text-slate-300">ApexScout Pro</span> • Open-Source Sports Analytics Engine • MIT License
+        <span class="font-semibold text-slate-300">ApexScout Pro</span> • Professional Football Recruitment Intelligence & Decision Suite
       </div>
-      <div class="text-[11px] text-slate-500">
-        Statistical similarity derived via Normalized Euclidean Distance Vector Model against Opta Event Percentiles.
+      <div class="text-[11px] text-slate-500 font-mono">
+        Mathematical Model: Cosine & Normalized Euclidean Distance on Opta Event Feeds • MIT License
       </div>
     </div>
   </footer>
 
-  <!-- CORE LOGIC & ANALYTICS SCRIPT -->
+  <!-- ========================================================================= -->
+  <!-- APPLICATION DATABASE & ENGINE JAVASCRIPT -->
+  <!-- ========================================================================= -->
   <script>
-    // --- BENCHMARK PLAYERS DATABASE ---
+    // --- 1. BENCHMARK SUPERSTARS DATABASE ---
     const BENCHMARKS = [
       {
         id: "haaland",
@@ -336,8 +583,10 @@
         league: "Premier League",
         position: "Center Forward",
         age: 24,
+        contract: "June 2027",
+        minutes: 2750,
         value: 180,
-        labels: ["Non-Pen xG", "Aerial Win %", "Box Touches", "Sprint Speed", "Shooting Eff.", "High Press"],
+        labels: ["Non-Pen xG", "Aerial Duels %", "Box Touches", "Top Sprint Speed", "Shooting Eff.", "High Pressures"],
         metrics: [98, 92, 94, 95, 96, 68]
       },
       {
@@ -347,6 +596,8 @@
         league: "Premier League",
         position: "Attacking Midfield",
         age: 33,
+        contract: "June 2025",
+        minutes: 1980,
         value: 50,
         labels: ["Expected Assists", "Key Passes", "Prog. Passes", "Shot Creation", "Cross Acc.", "Press Resist"],
         metrics: [99, 98, 97, 96, 92, 85]
@@ -358,6 +609,8 @@
         league: "Premier League",
         position: "Right Winger",
         age: 23,
+        contract: "June 2027",
+        minutes: 2890,
         value: 140,
         labels: ["Take-On Success", "Prog. Carries", "xG + xA", "Duels Won", "Box Crosses", "Tracking Back"],
         metrics: [94, 92, 91, 88, 89, 84]
@@ -369,6 +622,8 @@
         league: "La Liga",
         position: "Central Midfield",
         age: 21,
+        contract: "June 2029",
+        minutes: 2950,
         value: 180,
         labels: ["Box Entries", "Interceptions", "Ground Duels", "Prog. Runs", "Final-3rd Passes", "Goals / 90"],
         metrics: [95, 88, 92, 91, 89, 93]
@@ -380,6 +635,8 @@
         league: "Premier League",
         position: "Defensive Midfield",
         age: 28,
+        contract: "June 2027",
+        minutes: 3100,
         value: 130,
         labels: ["Pass Completion", "Tackles Won", "Ball Recoveries", "Press Resistance", "Prog. Passing", "Aerial Duels"],
         metrics: [99, 96, 95, 98, 94, 91]
@@ -391,15 +648,17 @@
         league: "Premier League",
         position: "Center Back",
         age: 33,
+        contract: "June 2025",
+        minutes: 2850,
         value: 30,
         labels: ["Aerial Duels %", "Tackle Success", "Long Ball Acc.", "Positioning", "Interceptions", "Clean Sheets"],
         metrics: [99, 94, 92, 97, 88, 90]
       }
     ];
 
-    // --- PROSPECT DATABASE ---
+    // --- 2. SCOUTED CANDIDATES DATABASE ---
     const CANDIDATES = [
-      // For Haaland
+      // For Haaland (Center Forwards)
       {
         id: "sesko",
         name: "Benjamin Šeško",
@@ -408,10 +667,13 @@
         position: "Center Forward",
         age: 21,
         nationality: "Slovenia",
+        contract: "June 2029",
+        minutes: 2140,
         value: 50,
         matchesWith: "haaland",
         metrics: [89, 88, 86, 94, 88, 74],
-        strengths: ["0.68 non-penalty xG/90", "Recorded top speed of 35.2 km/h", "61% aerial duel win rate in European competition"],
+        form: [7.8, 8.1, 7.2, 7.9, 7.5],
+        strengths: ["0.68 non-penalty xG/90 in Europe", "Top speed clocked at 35.2 km/h", "61% aerial duel win rate in European competition"],
         weaknesses: ["Occasional heavy first touch on transition receptions", "Link-up play against compact deep defensive blocks"],
         verdict: "Exceptional physical and statistical profile comparable to Erling Haaland at age 21. High-ceiling investment with 72% cost variance."
       },
@@ -423,9 +685,12 @@
         position: "Center Forward",
         age: 20,
         nationality: "Spain",
+        contract: "June 2029",
+        minutes: 1680,
         value: 35,
         matchesWith: "haaland",
         metrics: [86, 91, 84, 92, 85, 71],
+        form: [7.5, 7.9, 8.3, 7.1, 7.8],
         strengths: ["Direct line-breaking power in transition", "Top 5% penalty area touches in Primeira Liga", "High conversion on first-time shots"],
         weaknesses: ["Passing volume outside the penalty box", "Defensive pressing positioning"],
         verdict: "High-value physical forward with explosive acceleration and box dominance. Substantial resale margin."
@@ -438,15 +703,18 @@
         position: "Center Forward",
         age: 26,
         nationality: "Sweden",
+        contract: "June 2028",
+        minutes: 2840,
         value: 70,
         matchesWith: "haaland",
         metrics: [94, 84, 90, 89, 93, 80],
+        form: [8.5, 8.2, 7.9, 8.6, 8.1],
         strengths: ["Relentless 1v1 channel running", "Exceptional shot-creating actions per 90", "Complete physical durability"],
         weaknesses: ["Older profile than U23 targets", "High release clause valuation"],
         verdict: "Immediate starting caliber forward matching 93% of Haaland's offensive efficiency metrics."
       },
 
-      // For De Bruyne
+      // For De Bruyne (Playmakers)
       {
         id: "wharton",
         name: "Adam Wharton",
@@ -455,9 +723,12 @@
         position: "Attacking Midfield",
         age: 21,
         nationality: "England",
+        contract: "June 2029",
+        minutes: 2050,
         value: 45,
         matchesWith: "debruyne",
         metrics: [84, 91, 95, 87, 83, 90],
+        form: [7.4, 7.7, 7.9, 7.2, 7.8],
         strengths: ["High-frequency line-breaking progressive passes", "Exceptional body orientation when receiving under pressure", "Composure in central defensive transition"],
         weaknesses: ["Moderate direct goal threat from outside the box", "Sprint recovery speed"],
         verdict: "Premier progressive playmaker with world-class pass selection under intense tactical pressing."
@@ -470,15 +741,18 @@
         position: "Attacking Midfield",
         age: 23,
         nationality: "Spain",
+        contract: "June 2028",
+        minutes: 2420,
         value: 40,
         matchesWith: "debruyne",
         metrics: [94, 96, 90, 91, 88, 78],
+        form: [8.1, 7.5, 7.9, 8.3, 7.7],
         strengths: ["Led La Liga in open-play key passes", "Superb delivery on set-piece crosses", "Dynamic combinations in half-spaces"],
         weaknesses: ["Disciplinary record in high-tension matches", "Defensive tracking on deep counter-attacks"],
         verdict: "Highest output chance-creator in Europe outside of the top 5 clubs. Prime recruitment target."
       },
 
-      // For Saka
+      // For Saka (Wingers)
       {
         id: "doue",
         name: "Désiré Doué",
@@ -487,9 +761,12 @@
         position: "Right Winger",
         age: 19,
         nationality: "France",
+        contract: "June 2029",
+        minutes: 1450,
         value: 40,
         matchesWith: "saka",
         metrics: [92, 88, 84, 82, 80, 81],
+        form: [7.6, 7.2, 8.0, 7.8, 7.4],
         strengths: ["Ambidextrous 1v1 dribbler", "High ground-duel win rate on the touchline", "Explosive interior cut-backs"],
         weaknesses: ["Shot selection in crowded boxes", "Consistency over full 90-minute defensive shifts"],
         verdict: "Direct statistical surrogate to young Bukayo Saka with elite technical fluidity."
@@ -502,15 +779,18 @@
         position: "Right Winger",
         age: 21,
         nationality: "Belgium",
+        contract: "June 2027",
+        minutes: 2310,
         value: 45,
         matchesWith: "saka",
         metrics: [88, 89, 86, 80, 85, 78],
+        form: [7.9, 7.3, 7.6, 8.2, 7.5],
         strengths: ["Accurate in-swinging crosses from wide right", "Isolated 1v1 take-on efficiency", "High shot volume"],
         weaknesses: ["Right-foot finishing versatility", "Aerial retention"],
         verdict: "Consistent high-volume chance-creating winger with Champions League experience."
       },
 
-      // For Bellingham
+      // For Bellingham (Box-to-Box)
       {
         id: "neves",
         name: "João Neves",
@@ -519,15 +799,18 @@
         position: "Central Midfield",
         age: 20,
         nationality: "Portugal",
+        contract: "June 2029",
+        minutes: 2600,
         value: 60,
         matchesWith: "bellingham",
         metrics: [84, 94, 91, 88, 87, 80],
+        form: [8.2, 8.0, 7.9, 8.4, 8.1],
         strengths: ["Covers 12km+ per match with elite recovery metrics", "Clean transition tackling", "Relentless central workrate"],
         weaknesses: ["Aerial duel success due to height limits", "Direct goal volume"],
         verdict: "Elite dual-phase midfielder matching Bellingham's workrate and defensive presence."
       },
 
-      // For Rodri
+      // For Rodri (Defensive Midfield)
       {
         id: "varela",
         name: "Alan Varela",
@@ -536,15 +819,18 @@
         position: "Defensive Midfield",
         age: 23,
         nationality: "Argentina",
+        contract: "June 2028",
+        minutes: 2710,
         value: 35,
         matchesWith: "rodri",
         metrics: [94, 93, 91, 92, 88, 84],
+        form: [7.8, 7.5, 7.6, 8.0, 7.7],
         strengths: ["91% pass completion in high-pressure phases", "Superb defensive cover shielding backline", "High tactical discipline"],
         weaknesses: ["Moderate speed across wide recovery zones", "Accumulation of yellow cards"],
         verdict: "Positional pivot player offering stability, high retention passing, and strong resale value."
       },
 
-      // For Van Dijk
+      // For Van Dijk (Center Back)
       {
         id: "diomande",
         name: "Ousmane Diomande",
@@ -553,21 +839,28 @@
         position: "Center Back",
         age: 21,
         nationality: "Ivory Coast",
+        contract: "June 2027",
+        minutes: 2450,
         value: 40,
         matchesWith: "vandijk",
         metrics: [92, 90, 88, 91, 85, 87],
+        form: [7.7, 7.9, 8.1, 7.4, 7.8],
         strengths: ["Elite recovery pace over 30 meters", "Press-resistant ground passing into midfield", "High duel win rate"],
         weaknesses: ["Occasional aggressive over-committal on wide balls", "Diagonal long-ball consistency"],
         verdict: "Physically imposing modern center-back with top-tier recovery speed and progressive distribution."
       }
     ];
 
-    // --- STATE ---
+    // --- 3. APPLICATION STATE ---
     let activeBenchmark = BENCHMARKS[0];
     let activeCandidate = CANDIDATES[0];
-    let radarChart = null;
+    let compareCandidates = [CANDIDATES[0], CANDIDATES[1]]; // Initial 2 players for Compare view
+    let currentView = 'discovery';
 
-    // --- SIMILARITY FORMULA (Euclidean Distance on Normalized Vectors) ---
+    let profileRadarChart = null;
+    let multiRadarChart = null;
+
+    // --- 4. MATHEMATICAL FORMULAS ---
     function computeFit(bench, cand) {
       let sumSq = 0;
       for (let i = 0; i < bench.metrics.length; i++) {
@@ -579,17 +872,193 @@
       return pct.toFixed(1);
     }
 
-    // --- INITIALIZE APPLICATION ---
-    function initApp() {
-      initRadar();
-      syncUI();
-      applyFilters();
+    // --- 5. INITIALIZATION ---
+    function init() {
+      initProfileRadar();
+      initMultiRadar();
+      syncBenchmarkUI();
+      applyDiscoveryFilters();
+      syncProfileView();
+      syncCompareView();
       lucide.createIcons();
     }
 
-    function initRadar() {
-      const ctx = document.getElementById("radarChart").getContext("2d");
-      radarChart = new Chart(ctx, {
+    // Navigation Switcher
+    function switchView(viewName) {
+      currentView = viewName;
+
+      // Section visibility
+      document.getElementById('viewDiscovery').classList.toggle('hidden', viewName !== 'discovery');
+      document.getElementById('viewProfile').classList.toggle('hidden', viewName !== 'profile');
+      document.getElementById('viewCompare').classList.toggle('hidden', viewName !== 'compare');
+
+      // Tab styling
+      const tabs = [
+        { id: 'navTabDiscovery', name: 'discovery' },
+        { id: 'navTabProfile', name: 'profile' },
+        { id: 'navTabCompare', name: 'compare' }
+      ];
+
+      tabs.forEach(t => {
+        const el = document.getElementById(t.id);
+        if (t.name === viewName) {
+          el.className = "px-3 py-1.5 rounded text-xs font-semibold flex items-center gap-2 bg-slate-800 text-white border border-slate-700 transition";
+        } else {
+          el.className = "px-3 py-1.5 rounded text-xs font-medium flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800/60 transition";
+        }
+      });
+
+      if (viewName === 'profile') {
+        syncProfileView();
+      } else if (viewName === 'compare') {
+        syncCompareView();
+      }
+
+      lucide.createIcons();
+    }
+
+    // Benchmark Selector Handler
+    function onBenchmarkChange(benchId) {
+      activeBenchmark = BENCHMARKS.find(b => b.id === benchId);
+      document.getElementById('topBenchmarkSelect').value = benchId;
+
+      // Reset active candidate and compare pool to benchmark-relevant players
+      const matchingPool = CANDIDATES.filter(c => c.matchesWith === activeBenchmark.id);
+      if (matchingPool.length > 0) {
+        activeCandidate = matchingPool[0];
+        compareCandidates = matchingPool.slice(0, 2);
+      } else {
+        activeCandidate = CANDIDATES[0];
+        compareCandidates = [CANDIDATES[0]];
+      }
+
+      syncBenchmarkUI();
+      applyDiscoveryFilters();
+      syncProfileView();
+      syncCompareView();
+    }
+
+    function syncBenchmarkUI() {
+      // Top KPI Ribbon
+      document.getElementById('discBenchVal').innerText = `€${activeBenchmark.value.toFixed(1)}M`;
+      document.getElementById('discBenchName').innerText = `${activeBenchmark.name} (${activeBenchmark.position})`;
+      document.getElementById('compTargetLabel').innerText = `${activeBenchmark.name} (€${activeBenchmark.value}M)`;
+
+      const pool = CANDIDATES.filter(c => c.matchesWith === activeBenchmark.id);
+      const avgFee = pool.reduce((acc, c) => acc + c.value, 0) / Math.max(1, pool.length);
+      const variancePct = (((activeBenchmark.value - avgFee) / activeBenchmark.value) * 100).toFixed(1);
+
+      document.getElementById('discAvgFee').innerText = `€${avgFee.toFixed(1)}M`;
+    }
+
+    // --- SCREEN 1: DISCOVERY & FILTERING ---
+    function applyDiscoveryFilters() {
+      const pos = document.getElementById('filterPos').value;
+      const league = document.getElementById('filterLeague').value;
+      const maxAge = parseInt(document.getElementById('filterAge').value);
+      const maxBudget = parseFloat(document.getElementById('filterBudget').value);
+      const contract = document.getElementById('filterContract').value;
+      const minMins = parseInt(document.getElementById('filterMinutes').value);
+
+      let list = CANDIDATES.filter(c => {
+        const matchesBench = c.matchesWith === activeBenchmark.id;
+        const posOk = (pos === 'ALL') || (c.position === pos);
+        const leagueOk = (league === 'ALL') || (c.league === league);
+        const ageOk = c.age <= maxAge;
+        const budgetOk = c.value <= maxBudget;
+        const minsOk = c.minutes >= minMins;
+
+        let contractOk = true;
+        if (contract === '2026') contractOk = c.contract.includes('2025') || c.contract.includes('2026');
+        else if (contract === '2027') contractOk = c.contract.includes('2025') || c.contract.includes('2026') || c.contract.includes('2027');
+        else if (contract === '2028+') contractOk = c.contract.includes('2028') || c.contract.includes('2029');
+
+        return matchesBench && posOk && leagueOk && ageOk && budgetOk && minsOk && contractOk;
+      });
+
+      document.getElementById('filterMatchBadge').innerText = `Matching Candidates: ${list.length}`;
+      const tbody = document.getElementById('discoveryTableBody');
+
+      if (list.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="10" class="text-center py-8 text-app-muted font-sans">
+              No scouted players match current filter parameters. Try loosening budget or league constraints.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = list.map(c => {
+        const fit = computeFit(activeBenchmark, c);
+        const savings = activeBenchmark.value - c.value;
+        const isCompared = compareCandidates.some(cp => cp.id === c.id);
+        const isSelected = c.id === activeCandidate.id;
+
+        return `
+          <tr class="hover:bg-app-hover transition ${isSelected ? 'bg-slate-800/50' : ''}">
+            <td class="py-2.5 px-3 text-center">
+              <input type="checkbox" ${isCompared ? 'checked' : ''} onchange="toggleCompareCandidate('${c.id}', event)" class="rounded border-slate-700 text-emerald-500 focus:ring-0 cursor-pointer">
+            </td>
+            <td class="py-2.5 px-3 font-medium text-white cursor-pointer" onclick="viewPlayerProfile('${c.id}')">
+              <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-emerald-400' : 'bg-transparent'}"></span>
+                <span class="font-bold hover:text-emerald-400 transition">${c.name}</span>
+                <span class="text-app-muted text-[11px]">(${c.club})</span>
+              </div>
+            </td>
+            <td class="py-2.5 px-3 text-slate-300 font-sans">${c.position}</td>
+            <td class="py-2.5 px-3 text-right font-mono text-slate-300">${c.age}</td>
+            <td class="py-2.5 px-3 text-right font-mono text-slate-400">${c.contract}</td>
+            <td class="py-2.5 px-3 text-right font-mono text-slate-300">${c.minutes.toLocaleString()}</td>
+            <td class="py-2.5 px-3 text-right font-mono font-semibold text-emerald-400">€${c.value.toFixed(1)}M</td>
+            <td class="py-2.5 px-3 text-right font-mono text-slate-300">-€${savings.toFixed(1)}M</td>
+            <td class="py-2.5 px-3 text-right font-mono font-bold text-white">${fit}%</td>
+            <td class="py-2.5 px-3 text-center">
+              <button onclick="viewPlayerProfile('${c.id}')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-[11px] font-medium transition">
+                Full Profile →
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function resetFilters() {
+      document.getElementById('filterPos').value = activeBenchmark.position;
+      document.getElementById('filterLeague').value = 'ALL';
+      document.getElementById('filterAge').value = '24';
+      document.getElementById('filterBudget').value = '50';
+      document.getElementById('filterContract').value = 'ALL';
+      document.getElementById('filterMinutes').value = '900';
+      applyDiscoveryFilters();
+    }
+
+    function sortDiscovery(key) {
+      // Quick sort toggler
+      CANDIDATES.sort((a, b) => {
+        if (key === 'name') return a.name.localeCompare(b.name);
+        if (key === 'age') return a.age - b.age;
+        if (key === 'value') return a.value - b.value;
+        if (key === 'minutes') return b.minutes - a.minutes;
+        if (key === 'fit') return computeFit(activeBenchmark, b) - computeFit(activeBenchmark, a);
+        return 0;
+      });
+      applyDiscoveryFilters();
+    }
+
+    function viewPlayerProfile(candidateId) {
+      activeCandidate = CANDIDATES.find(c => c.id === candidateId);
+      switchView('profile');
+    }
+
+    // --- SCREEN 2: PROFILE VIEW ---
+    function initProfileRadar() {
+      const ctx = document.getElementById('profileRadarChart').getContext('2d');
+      profileRadarChart = new Chart(ctx, {
         type: 'radar',
         data: {
           labels: activeBenchmark.labels,
@@ -606,7 +1075,7 @@
             {
               label: activeCandidate.name,
               data: activeCandidate.metrics,
-              backgroundColor: 'rgba(16, 185, 129, 0.2)',
+              backgroundColor: 'rgba(16, 185, 129, 0.25)',
               borderColor: '#10B981',
               borderWidth: 2,
               pointBackgroundColor: '#10B981',
@@ -617,17 +1086,12 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false }
-          },
+          plugins: { legend: { display: false } },
           scales: {
             r: {
               angleLines: { color: 'rgba(255, 255, 255, 0.08)' },
               grid: { color: 'rgba(255, 255, 255, 0.08)' },
-              pointLabels: {
-                color: '#94A3B8',
-                font: { size: 10, family: 'Inter', weight: '500' }
-              },
+              pointLabels: { color: '#94A3B8', font: { size: 10, family: 'Inter', weight: '500' } },
               ticks: { display: false, min: 0, max: 100 }
             }
           }
@@ -635,141 +1099,277 @@
       });
     }
 
-    function onBenchmarkChange(benchId) {
-      activeBenchmark = BENCHMARKS.find(b => b.id === benchId);
-      // Auto select first candidate for this benchmark
-      const pool = CANDIDATES.filter(c => c.matchesWith === activeBenchmark.id);
-      activeCandidate = pool.length > 0 ? pool[0] : CANDIDATES[0];
+    function syncProfileView() {
+      const c = activeCandidate;
+      const fit = computeFit(activeBenchmark, c);
+      const savings = activeBenchmark.value - c.value;
+      const savingsPct = ((savings / activeBenchmark.value) * 100).toFixed(1);
 
-      syncUI();
-      applyFilters();
-    }
+      document.getElementById('profAvatar').innerText = c.name.split(' ').map(n=>n[0]).join('');
+      document.getElementById('profName').innerText = c.name;
+      document.getElementById('profFitBadge').innerText = `${fit}% Match to ${activeBenchmark.name}`;
+      document.getElementById('profSub').innerText = `${c.club} • ${c.league} • ${c.position} • ${c.age} Years Old • ${c.nationality}`;
+      
+      document.getElementById('profValue').innerText = `€${c.value.toFixed(1)}M`;
+      document.getElementById('profContract').innerText = c.contract;
+      document.getElementById('profSavings').innerText = `€${savings.toFixed(1)}M (-${savingsPct}%)`;
+      document.getElementById('profMinutes').innerText = `${c.minutes.toLocaleString()} Mins`;
 
-    function selectCandidate(candidateId) {
-      activeCandidate = CANDIDATES.find(c => c.id === candidateId);
-      syncUI();
-      applyFilters();
-    }
+      document.getElementById('profRadarBenchLabel').innerText = `${activeBenchmark.name} (Benchmark)`;
+      document.getElementById('profRadarTargetLabel').innerText = `${c.name} (Target)`;
 
-    function syncUI() {
-      // Benchmark KPIs
-      document.getElementById("kpiBenchVal").innerText = `€${activeBenchmark.value.toFixed(1)}M`;
-      document.getElementById("legendBenchmark").innerText = `${activeBenchmark.name} (Benchmark)`;
-      document.getElementById("legendCandidate").innerText = `${activeCandidate.name} (Target)`;
-
-      // Active Candidate Details
-      const fit = computeFit(activeBenchmark, activeCandidate);
-      document.getElementById("activeName").innerText = activeCandidate.name;
-      document.getElementById("activeMatchBadge").innerText = `${fit}% Statistical Fit`;
-      document.getElementById("activeSub").innerText = `${activeCandidate.club} • ${activeCandidate.league} • ${activeCandidate.position} • ${activeCandidate.age} Years Old • ${activeCandidate.nationality}`;
-      document.getElementById("activeValue").innerText = `€${activeCandidate.value.toFixed(1)}M`;
-
-      // Arbitrage Math
-      const variance = activeBenchmark.value - activeCandidate.value;
-      const variancePct = ((variance / activeBenchmark.value) * 100).toFixed(1);
-      const mult = (activeBenchmark.value / Math.max(1, activeCandidate.value)).toFixed(2);
-
-      document.getElementById("arbVariance").innerText = `-€${variance.toFixed(1)}M (-${variancePct}%)`;
-      document.getElementById("arbMultiplier").innerText = `${mult}x Capital Multiplier`;
-      document.getElementById("arbResale").innerText = activeCandidate.age <= 21 ? "Very High (U21)" : "High (U24)";
-      document.getElementById("activeVerdict").innerText = activeCandidate.verdict;
-
-      // Top Ribbon KPIs
-      const relatedPool = CANDIDATES.filter(c => c.matchesWith === activeBenchmark.id);
-      const avgFee = relatedPool.reduce((acc, c) => acc + c.value, 0) / Math.max(1, relatedPool.length);
-      const overallReduction = (((activeBenchmark.value - avgFee) / activeBenchmark.value) * 100).toFixed(1);
-
-      document.getElementById("kpiAvgFee").innerText = `€${avgFee.toFixed(1)}M`;
-      document.getElementById("kpiArbitrage").innerText = `${overallReduction}% Cost Reduction`;
-
-      // Metrics Grid (Normalized Percentile Bars)
-      const grid = document.getElementById("metricsGrid");
+      // Role-specific stats bars
+      const grid = document.getElementById('profileMetricsBreakdown');
       grid.innerHTML = activeBenchmark.labels.map((lbl, idx) => {
         const bVal = activeBenchmark.metrics[idx];
-        const cVal = activeCandidate.metrics[idx];
+        const cVal = c.metrics[idx];
         return `
-          <div class="p-2.5 rounded bg-app-bg border border-app-border space-y-1">
-            <div class="flex justify-between text-[11px] font-sans">
-              <span class="text-slate-400 truncate">${lbl}</span>
+          <div class="p-2.5 rounded bg-app-card border border-app-border space-y-1">
+            <div class="flex justify-between text-[11px]">
+              <span class="text-slate-300 font-sans truncate">${lbl}</span>
               <span class="font-mono text-emerald-400 font-bold">${cVal} <span class="text-slate-500 font-normal">/ ${bVal}</span></span>
             </div>
-            <div class="w-full bg-slate-800 h-1 rounded overflow-hidden flex">
+            <div class="w-full bg-slate-800 h-1.5 rounded overflow-hidden flex">
               <div class="bg-emerald-500 h-full" style="width: ${cVal}%"></div>
             </div>
           </div>
         `;
-      }).join("");
+      }).join('');
 
-      // Update Chart
-      if (radarChart) {
-        radarChart.data.labels = activeBenchmark.labels;
-        radarChart.data.datasets[0].label = activeBenchmark.name;
-        radarChart.data.datasets[0].data = activeBenchmark.metrics;
-        radarChart.data.datasets[1].label = activeCandidate.name;
-        radarChart.data.datasets[1].data = activeCandidate.metrics;
-        radarChart.update();
+      // Recent Form Boxes
+      const formContainer = document.getElementById('profileFormBoxes');
+      const avgForm = (c.form.reduce((a, b) => a + b, 0) / c.form.length).toFixed(2);
+      document.getElementById('profFormAvg').innerText = `${avgForm} Avg Rating`;
+
+      formContainer.innerHTML = c.form.map((rating, idx) => `
+        <div class="p-2 rounded bg-app-card border border-app-border">
+          <span class="text-[10px] text-app-muted block">Match -${5 - idx}</span>
+          <span class="font-bold text-sm ${rating >= 8.0 ? 'text-emerald-400' : rating >= 7.5 ? 'text-sky-400' : 'text-slate-200'}">${rating.toFixed(1)}</span>
+        </div>
+      `).join('');
+
+      // Scout notes
+      document.getElementById('profStrengths').innerHTML = c.strengths.map(s => `<li>• ${s}</li>`).join('');
+      document.getElementById('profWeaknesses').innerHTML = c.weaknesses.map(w => `<li>• ${w}</li>`).join('');
+      document.getElementById('profVerdict').innerText = c.verdict;
+
+      // Update radar chart
+      if (profileRadarChart) {
+        profileRadarChart.data.labels = activeBenchmark.labels;
+        profileRadarChart.data.datasets[0].label = activeBenchmark.name;
+        profileRadarChart.data.datasets[0].data = activeBenchmark.metrics;
+        profileRadarChart.data.datasets[1].label = c.name;
+        profileRadarChart.data.datasets[1].data = c.metrics;
+        profileRadarChart.update();
       }
-
-      lucide.createIcons();
     }
 
-    function applyFilters() {
-      const selectedLeague = document.getElementById("filterLeague").value;
-      const maxBudget = parseFloat(document.getElementById("filterBudget").value);
-      const maxAge = parseInt(document.getElementById("filterAge").value);
+    // --- SCREEN 3: COMPARE VIEW (2 to 4 Players) ---
+    function toggleCompareCandidate(candId, event) {
+      if (event) event.stopPropagation();
 
-      const tableBody = document.getElementById("prospectTableBody");
+      const cand = CANDIDATES.find(c => c.id === candId);
+      const idx = compareCandidates.findIndex(c => c.id === candId);
 
-      // Filter candidates for current benchmark
-      let list = CANDIDATES.filter(c => {
-        const isMatch = c.matchesWith === activeBenchmark.id;
-        const leagueOk = (selectedLeague === "ALL") || (c.league === selectedLeague);
-        const budgetOk = c.value <= maxBudget;
-        const ageOk = c.age <= maxAge;
-        return isMatch && leagueOk && budgetOk && ageOk;
+      if (idx >= 0) {
+        if (compareCandidates.length <= 1) {
+          alert("Comparison view requires at least one candidate.");
+          return;
+        }
+        compareCandidates.splice(idx, 1);
+      } else {
+        if (compareCandidates.length >= 4) {
+          alert("Maximum 4 players allowed in side-by-side comparison. Please deselect one first.");
+          return;
+        }
+        compareCandidates.push(cand);
+      }
+
+      document.getElementById('compareNavBadge').innerText = compareCandidates.length;
+      document.getElementById('compareCountLabel').innerText = `${compareCandidates.length} of 4 Max`;
+      applyDiscoveryFilters();
+      syncCompareView();
+    }
+
+    function clearComparison() {
+      compareCandidates = [activeCandidate];
+      document.getElementById('compareNavBadge').innerText = compareCandidates.length;
+      document.getElementById('compareCountLabel').innerText = `${compareCandidates.length} of 4 Max`;
+      applyDiscoveryFilters();
+      syncCompareView();
+    }
+
+    function initMultiRadar() {
+      const ctx = document.getElementById('multiRadarChart').getContext('2d');
+      multiRadarChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: activeBenchmark.labels,
+          datasets: []
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            r: {
+              angleLines: { color: 'rgba(255, 255, 255, 0.08)' },
+              grid: { color: 'rgba(255, 255, 255, 0.08)' },
+              pointLabels: { color: '#94A3B8', font: { size: 10, family: 'Inter', weight: '500' } },
+              ticks: { display: false, min: 0, max: 100 }
+            }
+          }
+        }
+      });
+    }
+
+    const CANDIDATE_COLORS = [
+      { border: '#10B981', bg: 'rgba(16, 185, 129, 0.15)', name: 'emerald' },
+      { border: '#F59E0B', bg: 'rgba(245, 158, 11, 0.15)', name: 'amber' },
+      { border: '#A855F7', bg: 'rgba(168, 85, 247, 0.15)', name: 'purple' },
+      { border: '#EC4899', bg: 'rgba(236, 72, 153, 0.15)', name: 'pink' }
+    ];
+
+    function syncCompareView() {
+      document.getElementById('compareNavBadge').innerText = compareCandidates.length;
+      document.getElementById('compareCountLabel').innerText = `${compareCandidates.length} of 4 Max`;
+
+      // 1. Update Multi-Radar Datasets
+      const datasets = [
+        {
+          label: `${activeBenchmark.name} (Benchmark)`,
+          data: activeBenchmark.metrics,
+          backgroundColor: 'rgba(56, 189, 248, 0.10)',
+          borderColor: '#38BDF8',
+          borderWidth: 2,
+          pointBackgroundColor: '#38BDF8',
+          pointRadius: 2
+        }
+      ];
+
+      compareCandidates.forEach((c, i) => {
+        const col = CANDIDATE_COLORS[i % CANDIDATE_COLORS.length];
+        datasets.push({
+          label: c.name,
+          data: c.metrics,
+          backgroundColor: col.bg,
+          borderColor: col.border,
+          borderWidth: 2,
+          pointBackgroundColor: col.border,
+          pointRadius: 3
+        });
       });
 
-      if (list.length === 0) {
-        tableBody.innerHTML = `
-          <tr>
-            <td colspan="8" class="text-center py-6 text-app-muted">
-              No scouted players match current filter parameters. Try expanding maximum fee or league scope.
-            </td>
-          </tr>
-        `;
-        return;
+      if (multiRadarChart) {
+        multiRadarChart.data.labels = activeBenchmark.labels;
+        multiRadarChart.data.datasets = datasets;
+        multiRadarChart.update();
       }
 
-      tableBody.innerHTML = list.map(c => {
-        const fit = computeFit(activeBenchmark, c);
-        const savings = activeBenchmark.value - c.value;
-        const isSelected = c.id === activeCandidate.id;
+      // Legend
+      const legendEl = document.getElementById('multiRadarLegend');
+      legendEl.innerHTML = `
+        <div class="flex items-center space-x-2">
+          <span class="w-3 h-3 rounded-sm bg-sky-400"></span>
+          <span class="text-slate-300 font-sans font-medium">${activeBenchmark.name} (Benchmark Target)</span>
+        </div>
+      ` + compareCandidates.map((c, i) => {
+        const col = CANDIDATE_COLORS[i % CANDIDATE_COLORS.length];
+        return `
+          <div class="flex items-center space-x-2">
+            <span class="w-3 h-3 rounded-sm" style="background-color: ${col.border}"></span>
+            <span class="text-slate-300 font-sans">${c.name} (${c.club})</span>
+          </div>
+        `;
+      }).join('');
+
+      // 2. Head-to-Head Attributes Matrix Columns
+      const matrixContainer = document.getElementById('compareColumnsContainer');
+      const allPlayers = [activeBenchmark, ...compareCandidates];
+
+      matrixContainer.className = `min-w-[650px] grid grid-cols-${allPlayers.length} gap-3 text-xs`;
+
+      matrixContainer.innerHTML = allPlayers.map((p, pIdx) => {
+        const isBench = pIdx === 0;
+        const color = isBench ? '#38BDF8' : CANDIDATE_COLORS[(pIdx - 1) % CANDIDATE_COLORS.length].border;
+        const fit = isBench ? '100.0%' : `${computeFit(activeBenchmark, p)}%`;
 
         return `
-          <tr class="hover:bg-app-hover transition cursor-pointer ${isSelected ? 'bg-slate-800/60' : ''}" onclick="selectCandidate('${c.id}')">
+          <div class="p-3 rounded bg-app-card border border-app-border space-y-3">
+            <div class="border-b border-app-border pb-2">
+              <span class="text-[10px] uppercase font-mono font-bold block" style="color: ${color}">
+                ${isBench ? 'TARGET BENCHMARK' : `CANDIDATE #${pIdx}`}
+              </span>
+              <h4 class="font-bold text-sm text-white truncate">${p.name}</h4>
+              <p class="text-[11px] text-app-muted truncate">${p.club} • ${p.league}</p>
+            </div>
+
+            <div class="space-y-1.5 font-mono text-[11px]">
+              <div class="flex justify-between">
+                <span class="text-app-muted font-sans">Age:</span>
+                <span class="text-slate-200 font-bold">${p.age}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-app-muted font-sans">Fee:</span>
+                <span class="font-bold" style="color: ${color}">€${p.value.toFixed(1)}M</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-app-muted font-sans">Contract:</span>
+                <span class="text-slate-300">${p.contract}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-app-muted font-sans">Fit Parity:</span>
+                <span class="text-white font-bold">${fit}</span>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-app-border space-y-2">
+              <span class="text-[10px] text-app-muted uppercase font-sans block font-semibold">Pillar Metrics</span>
+              ${activeBenchmark.labels.map((lbl, mIdx) => `
+                <div class="space-y-0.5">
+                  <div class="flex justify-between text-[10px] font-mono">
+                    <span class="text-slate-400 font-sans truncate">${lbl}</span>
+                    <span class="font-bold text-slate-200">${p.metrics[mIdx]}</span>
+                  </div>
+                  <div class="w-full bg-slate-800 h-1 rounded overflow-hidden">
+                    <div class="h-full" style="width: ${p.metrics[mIdx]}%; background-color: ${color}"></div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // 3. Financial Arbitrage Table
+      const finTbody = document.getElementById('compareFinancialTableBody');
+      finTbody.innerHTML = compareCandidates.map((c, i) => {
+        const savings = activeBenchmark.value - c.value;
+        const fit = computeFit(activeBenchmark, c);
+        const mult = (activeBenchmark.value / Math.max(1, c.value)).toFixed(2);
+        const priority = parseFloat(fit) >= 90 ? 'High (Immediate Sign)' : 'Medium (Target Shortlist)';
+
+        return `
+          <tr class="hover:bg-app-hover transition">
             <td class="py-2.5 px-3 font-medium text-white flex items-center gap-2">
-              <span class="w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-emerald-400' : 'bg-transparent'}"></span>
-              ${c.name}
+              <span class="w-2 h-2 rounded-sm" style="background-color: ${CANDIDATE_COLORS[i % CANDIDATE_COLORS.length].border}"></span>
+              ${c.name} <span class="text-app-muted text-[11px]">(${c.club})</span>
             </td>
-            <td class="py-2.5 px-3 text-app-muted">${c.club} <span class="text-slate-500 font-mono text-[10px]">(${c.league})</span></td>
-            <td class="py-2.5 px-3 text-slate-300 font-sans">${c.position}</td>
             <td class="py-2.5 px-3 text-right font-mono text-slate-300">${c.age}</td>
             <td class="py-2.5 px-3 text-right font-mono font-semibold text-emerald-400">€${c.value.toFixed(1)}M</td>
-            <td class="py-2.5 px-3 text-right font-mono text-slate-300">-€${savings.toFixed(1)}M</td>
+            <td class="py-2.5 px-3 text-right font-mono text-slate-200">€${savings.toFixed(1)}M</td>
+            <td class="py-2.5 px-3 text-right font-mono text-slate-400">${c.contract}</td>
             <td class="py-2.5 px-3 text-right font-mono font-bold text-white">${fit}%</td>
-            <td class="py-2.5 px-3 text-center">
-              <button class="px-2 py-1 rounded text-[11px] font-sans font-medium ${isSelected ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}">
-                ${isSelected ? 'Active' : 'Analyze'}
-              </button>
-            </td>
+            <td class="py-2.5 px-3 text-right font-mono text-amber-400">${mult}x</td>
+            <td class="py-2.5 px-3 text-center font-sans font-medium text-emerald-400">${priority}</td>
           </tr>
         `;
-      }).join("");
+      }).join('');
 
       lucide.createIcons();
     }
 
-    window.onload = initApp;
+    window.onload = init;
   </script>
 </body>
 </html>
